@@ -21,7 +21,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
   const badge = "rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide";
 
   return (
-    <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white transition duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:hover:translate-y-0">
+    <article className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white transition duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:hover:translate-y-0">
       <div className="relative aspect-[4/3] overflow-hidden bg-subtle">
         <CardPhotos
           photos={vehicle.photos}
