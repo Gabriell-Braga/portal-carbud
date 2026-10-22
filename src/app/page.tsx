@@ -1,6 +1,8 @@
-import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { CarArt } from "~/components/car-art";
+import { CardPhotos } from "~/components/card-photos";
+import { CityInput, Select } from "~/components/fields";
 import { PriceRange } from "~/components/price-range";
 import { vehicleHref } from "~/components/vehicle-card";
 import { km, price } from "~/lib/format";
@@ -62,19 +64,14 @@ export default async function HomePage() {
           <label className="sr-only" htmlFor="busca-q">Marca, modelo ou palavra-chave</label>
           <input id="busca-q" name="q" placeholder="Marca, modelo ou palavra-chave" className={field} />
           <label className="sr-only" htmlFor="busca-cidade">Cidade ou CEP</label>
-          <input id="busca-cidade" name="cidade" placeholder="Cidade ou CEP" list="cidades" className={field} />
-          <datalist id="cidades">
-            {facets.cities.map((city) => (
-              <option key={city} value={city.split(" - ")[0]}>{city}</option>
-            ))}
-          </datalist>
-          <label className="sr-only" htmlFor="busca-preco">Faixa de preço</label>
-          <select id="busca-preco" name="precoMax" defaultValue="" className={field}>
-            <option value="">Qualquer valor</option>
-            {[50, 80, 100, 150, 200, 300].map((mil) => (
-              <option key={mil} value={mil * 1000}>Até R$ {mil} mil</option>
-            ))}
-          </select>
+          <CityInput id="busca-cidade" cities={facets.cities} inputClassName="h-12 px-4" />
+          <Select
+            name="precoMax"
+            label="Faixa de preço"
+            placeholder="Qualquer valor"
+            options={[{ value: "", label: "Qualquer valor" }, ...[50, 80, 100, 150, 200, 300].map((mil) => ({ value: String(mil * 1000), label: `Até R$ ${mil} mil` }))]}
+            className="[&>button]:h-12 [&>button]:px-4"
+          />
           <button className="h-12 rounded-lg bg-brand px-8 text-sm font-semibold text-white hover:bg-brand-hover">
             Buscar veículos
           </button>
@@ -105,23 +102,23 @@ export default async function HomePage() {
             <ul className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
               {showcase.map((vehicle, index) => (
                 <li key={vehicle.id} className="w-[78%] shrink-0 snap-start lg:w-auto">
-                  <Link href={vehicleHref(vehicle)} className="group block overflow-hidden rounded-xl border border-line transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
-                    <div className="aspect-video overflow-hidden bg-subtle">
-                      {vehicle.coverUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={vehicle.coverUrl} alt={vehicle.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading={index === 0 ? "eager" : "lazy"} />
-                      ) : (
-                        <CarArt seed={vehicle.id} className="transition-transform duration-500 group-hover:scale-105" />
-                      )}
+                  <article className="group relative overflow-hidden rounded-xl border border-line transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+                    <div className="relative aspect-video overflow-hidden bg-subtle">
+                      <CardPhotos photos={vehicle.photos} cover={vehicle.coverUrl} title={vehicle.title} seed={vehicle.id} href={vehicleHref(vehicle)} priority={index === 0} />
                     </div>
                     <div className="flex items-start justify-between gap-3 p-3">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{vehicle.brand} {vehicle.model}</p>
+                        <p className="truncate text-sm font-semibold">
+                          {/* o link cobre o card; o carrossel fica acima dele */}
+                          <Link href={vehicleHref(vehicle)} className="after:absolute after:inset-0 group-hover:text-brand">
+                            {vehicle.brand} {vehicle.model}
+                          </Link>
+                        </p>
                         <p className="text-xs text-muted">{vehicle.yearModel} • {km(vehicle.mileageKm)}</p>
                       </div>
                       <p className="shrink-0 font-display text-sm font-bold">{price(vehicle.priceCents, vehicle.priceOnRequest)}</p>
                     </div>
-                  </Link>
+                  </article>
                 </li>
               ))}
             </ul>
@@ -192,13 +189,6 @@ export default async function HomePage() {
         </ul>
       </section>
 
-      <section className="mt-10 flex items-start gap-3 rounded-2xl bg-subtle p-4 lg:items-center lg:p-6">
-        <ShieldCheck className="size-6 shrink-0 text-success" aria-hidden="true" />
-        <div>
-          <h2 className="font-display font-semibold">Uma compra mais segura</h2>
-          <p className="text-sm text-muted">Informações completas do anúncio e contato direto com lojas cadastradas no Carbud.</p>
-        </div>
-      </section>
     </div>
   );
 }

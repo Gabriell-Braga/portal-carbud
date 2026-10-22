@@ -46,8 +46,3 @@ export function FilterPanel({ total, children }: { total: number; children: Reac
     </>
   );
 }
-
-/** Select que reenvia o formulário ao mudar (ordenação, marca → modelos). */
-export function AutoSubmitSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select {...props} onChange={(event) => event.currentTarget.form?.requestSubmit()} />;
-}

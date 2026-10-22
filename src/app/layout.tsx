@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#c6000f" };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${sora.variable}`}>
       <body className="font-sans antialiased">
@@ -32,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="conteudo">{children}</main>
         <Footer />
         <TabBar />
+        {modal}
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import { Check, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { MaskedInput } from "./fields";
 
 type Channel = "form" | "whatsapp";
 
@@ -189,7 +190,7 @@ export function ContactActions({ dealer, dealerName, vehicle, hasWhatsapp, varia
                     <input id={`${variant}-name`} name="name" autoComplete="name" required placeholder="Nome e sobrenome" aria-invalid={!!fields.name} className={`${input} border-line`} />
                   </Field>
                   <Field id={`${variant}-phone`} label="Celular / WhatsApp" error={fields.phone}>
-                    <input id={`${variant}-phone`} name="phone" type="tel" autoComplete="tel" inputMode="tel" required placeholder="(31) 99999-9999" aria-invalid={!!fields.phone} className={`${input} border-line`} />
+                    <MaskedInput mask="phone" id={`${variant}-phone`} name="phone" type="tel" autoComplete="tel" required placeholder="(31) 99999-9999" aria-invalid={!!fields.phone} className={`${input} border-line`} />
                   </Field>
                   <Field id={`${variant}-email`} label="E-mail" error={fields.email}>
                     <input id={`${variant}-email`} name="email" type="email" autoComplete="email" required placeholder="voce@exemplo.com" aria-invalid={!!fields.email} className={`${input} border-line`} />
@@ -202,7 +203,7 @@ export function ContactActions({ dealer, dealerName, vehicle, hasWhatsapp, varia
 
                   <div>
                     <label className="flex items-start gap-3 text-sm">
-                      <input name="consent" type="checkbox" aria-invalid={!!fields.consent} className="mt-0.5 size-5 shrink-0 accent-brand" />
+                      <input name="consent" type="checkbox" aria-invalid={!!fields.consent} className="checkbox mt-0.5" />
                       <span>
                         Autorizo o compartilhamento dos meus dados com a loja para responder meu interesse.{" "}
                         <Link href="/privacidade" target="_blank" className="text-brand underline">Política de Privacidade</Link>

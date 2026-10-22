@@ -117,3 +117,38 @@ dialog[open]::backdrop {
   border: 2px solid var(--color-brand);
   cursor: grab;
 }
+
+/* caixa de seleção do portal: mesma cara em todo navegador, foco visível */
+.checkbox {
+  appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--color-line);
+  border-radius: 6px;
+  background: #fff center / 14px no-repeat;
+}
+.checkbox:hover {
+  border-color: var(--color-muted);
+}
+.checkbox:checked {
+  border-color: var(--color-brand);
+  background-color: var(--color-brand);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+.checkbox:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand) 35%, transparent);
+  outline-offset: 2px;
+}
+.checkbox[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+/* número sem setinha de incremento */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+}
+input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+}

@@ -4,24 +4,26 @@ import { LogOut } from "lucide-react";
 import { useState } from "react";
 import type { Buyer } from "~/lib/account";
 import { clearFavorites } from "./favorites";
+import { MaskedInput } from "./fields";
 
 const input =
   "h-12 w-full rounded-lg border border-line bg-white px-4 text-sm outline-none placeholder:text-muted focus:border-ink disabled:bg-subtle disabled:text-muted";
 
 type State = { status: "idle" | "saving" | "saved" } | { status: "error"; message: string };
 
-/** Dados pessoais e preferências: um formulário só, salvo de uma vez. */
-export function ProfileForm({ buyer }: { buyer: Buyer }) {
+/** Uma aba da conta por vez: dados pessoais ou preferências. O PATCH aceita só o que mudou. */
+export function ProfileForm({ buyer, part }: { buyer: Buyer; part: "dados" | "preferencias" }) {
   const [state, setState] = useState<State>({ status: "idle" });
 
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     setState({ status: "saving" });
+    const body = part === "dados" ? { name: data.get("name"), phone: data.get("phone") } : { marketingOptIn: data.get("marketing") === "on" };
     const response = await fetch("/api/conta/me", {
       method: "PATCH",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name: data.get("name"), phone: data.get("phone"), marketingOptIn: data.get("marketing") === "on" }),
+      body: JSON.stringify(body),
     }).catch(() => null);
     const payload = (await response?.json().catch(() => null)) as
       | { ok: true }
@@ -33,35 +35,32 @@ export function ProfileForm({ buyer }: { buyer: Buyer }) {
   }
 
   return (
-    <form onSubmit={save} onInput={() => state.status === "saved" && setState({ status: "idle" })} className="space-y-4">
-      <section id="dados" className="scroll-mt-24 rounded-2xl border border-line p-5">
-        <h2 className="font-display text-lg font-bold">Dados pessoais</h2>
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <form onSubmit={save} onInput={() => state.status === "saved" && setState({ status: "idle" })} className="mt-6 space-y-6">
+      {part === "dados" ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="perfil-nome" className="mb-1.5 block text-sm font-semibold">Nome completo</label>
             <input id="perfil-nome" name="name" autoComplete="name" required minLength={2} defaultValue={buyer.name ?? ""} className={input} />
           </div>
           <div>
             <label htmlFor="perfil-tel" className="mb-1.5 block text-sm font-semibold">Celular (opcional)</label>
-            <input id="perfil-tel" name="phone" type="tel" autoComplete="tel" inputMode="tel" defaultValue={buyer.phone ?? ""} placeholder="(31) 99999-9999" className={input} />
+            <MaskedInput mask="phone" id="perfil-tel" name="phone" type="tel" autoComplete="tel" defaultValue={buyer.phone ?? ""} placeholder="(31) 99999-9999" className={input} />
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="perfil-email" className="mb-1.5 block text-sm font-semibold">E-mail</label>
             <input id="perfil-email" value={buyer.email} disabled className={input} />
+            <p className="mt-1 text-xs text-muted">O e-mail é o seu acesso e não pode ser trocado por aqui.</p>
           </div>
         </div>
-      </section>
-
-      <section id="preferencias" className="scroll-mt-24 rounded-2xl border border-line p-5">
-        <h2 className="font-display text-lg font-bold">Preferências</h2>
-        <label className="mt-4 flex items-start gap-3 text-sm">
-          <input name="marketing" type="checkbox" defaultChecked={buyer.marketingOptIn} className="mt-0.5 size-5 shrink-0 accent-brand" />
+      ) : (
+        <label className="flex items-start gap-3 rounded-xl border border-line p-4 text-sm">
+          <input name="marketing" type="checkbox" defaultChecked={buyer.marketingOptIn} className="checkbox mt-0.5" />
           <span>
-            Quero receber novidades e ofertas do Carbud
+            <span className="font-semibold">Novidades e ofertas do Carbud por e-mail</span>
             <span className="block text-xs text-muted">Você pode desmarcar quando quiser.</span>
           </span>
         </label>
-      </section>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         <button disabled={state.status === "saving"} className="min-h-12 rounded-lg bg-brand px-6 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-60">
@@ -90,10 +89,7 @@ export function LogoutButton({ className = "" }: { className?: string }) {
       className={`flex items-center gap-3 text-sm font-semibold hover:text-brand ${className}`}
     >
       <LogOut className="size-5" aria-hidden="true" />
-      <span className="text-left">
-        Sair da conta
-        <span className="block text-xs font-normal text-muted">Encerrar sessão neste dispositivo</span>
-      </span>
+      Sair
     </button>
   );
 }

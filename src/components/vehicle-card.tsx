@@ -62,17 +62,20 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
         {vehicle.version && <p className="line-clamp-2 text-xs uppercase text-muted">{vehicle.version}</p>}
         <p className="text-sm text-ink">
           {vehicle.yearModel} • {km(vehicle.mileageKm)}
-          {vehicle.transmissionLabel ? ` • ${vehicle.transmissionLabel}` : ""}
         </p>
         {where && <p className="text-xs text-muted">{where}</p>}
 
         <div className="mt-3 border-t border-line pt-3">
           <p className="text-xs text-muted">Preço anunciado</p>
           <p className="font-display text-xl font-bold">{label}</p>
-          <p className="mt-0.5 truncate text-xs text-muted">{vehicle.dealer.name}</p>
         </div>
 
-        <span className="mt-3 flex min-h-11 items-center justify-center rounded-lg border border-line text-sm font-semibold transition duration-300 group-hover:border-brand group-hover:bg-brand group-hover:text-white">
+        {/* Figma: o destaque já vem com o CTA cheio; os outros enchem no hover */}
+        <span
+          className={`mt-3 flex min-h-11 items-center justify-center rounded-lg border text-sm font-semibold transition duration-300 ${
+            vehicle.featured ? "border-brand bg-brand text-white group-hover:bg-brand-hover" : "border-line group-hover:border-brand group-hover:bg-brand group-hover:text-white"
+          }`}
+        >
           Ver oferta
         </span>
       </div>

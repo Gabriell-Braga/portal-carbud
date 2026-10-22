@@ -2,7 +2,8 @@ import { X } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AutoSubmitSelect, FilterPanel } from "~/components/filter-panel";
+import { Select } from "~/components/fields";
+import { FilterPanel } from "~/components/filter-panel";
 import { FiltersForm } from "~/components/filters-form";
 import { EmptyResults, Pagination, VehicleGrid, withParam } from "~/components/results";
 import { FILTER_KEYS, SORTS, filterLabel } from "~/lib/catalog";
@@ -69,52 +70,47 @@ export default async function BuyPage({ searchParams }: Props) {
           </FilterPanel>
         </aside>
 
-        <section aria-label="Resultados" className="mt-4 min-w-0 lg:mt-0">
+        {/* Figma 03 · Listagem: contagem, ordenação, filtros aplicados e grade num cartão só */}
+        <section aria-label="Resultados" className="mt-4 min-w-0 lg:mt-0 lg:rounded-2xl lg:border lg:border-line lg:bg-white lg:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm font-semibold">
+            <p className="font-display text-base font-bold">
               {result.total.toLocaleString("pt-BR")} {result.total === 1 ? "anúncio encontrado" : "anúncios encontrados"}
             </p>
-            <label className="flex items-center gap-2 text-sm text-muted">
+            <div className="flex items-center gap-2 text-sm text-muted">
               Ordenar por
-              <AutoSubmitSelect
-                form="filtros"
-                name="ordem"
-                defaultValue={values.ordem ?? "recentes"}
-                className="h-10 rounded-lg border border-line bg-white px-3 text-sm text-ink"
-              >
-                {SORTS.map((sort) => <option key={sort.value} value={sort.value}>{sort.label}</option>)}
-              </AutoSubmitSelect>
-            </label>
+              <Select form="filtros" name="ordem" label="Ordenar por" placeholder="Mais relevantes" defaultValue={values.ordem ?? "recentes"} options={SORTS} autoSubmit className="w-48" />
+            </div>
           </div>
 
           {applied.length > 0 && (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted">Filtros aplicados</span>
-              {applied.map((key) => (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-4">
+              <span className="mr-1 text-xs text-muted">Filtros aplicados</span>
+              {applied.map((key, index) => (
                 <Link
                   key={key}
                   href={withParam("/comprar", params, key, null)}
                   aria-label={`Remover filtro ${filterLabel(key, values[key]!)}`}
-                  className="inline-flex min-h-8 items-center gap-1 rounded-full bg-brand px-3 text-xs font-semibold text-white hover:bg-brand-hover"
+                  className={`inline-flex min-h-8 items-center gap-1 rounded-full px-3 text-xs font-semibold ${
+                    index === 0 ? "bg-brand text-white hover:bg-brand-hover" : "border border-line bg-white hover:border-brand hover:text-brand"
+                  }`}
                 >
                   {filterLabel(key, values[key]!)}
                   <X className="size-3" aria-hidden="true" />
                 </Link>
               ))}
-              <Link href="/comprar" className="ml-auto text-xs font-semibold text-brand">Limpar todos</Link>
+              <Link href="/comprar" className="ml-auto text-xs font-semibold text-brand hover:text-brand-hover">Limpar todos</Link>
             </div>
           )}
 
-          <div className="mt-5">
-            {result.vehicles.length ? (
-              <>
-                <VehicleGrid vehicles={result.vehicles} />
-                <Pagination base="/comprar" params={params} page={result.page} pageSize={result.pageSize} total={result.total} />
-              </>
-            ) : (
-              <EmptyResults clearHref="/comprar" />
-            )}
-          </div>
+          <h2 className="mt-6 mb-3 text-sm font-semibold">Carros usados e seminovos</h2>
+          {result.vehicles.length ? (
+            <>
+              <VehicleGrid vehicles={result.vehicles} />
+              <Pagination base="/comprar" params={params} page={result.page} pageSize={result.pageSize} total={result.total} />
+            </>
+          ) : (
+            <EmptyResults clearHref="/comprar" />
+          )}
         </section>
       </div>
     </div>

@@ -9,9 +9,9 @@ import { CarArt } from "./car-art";
 const zoom = "h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105";
 
 /**
- * Fotos do card: arrasta no celular (scroll-snap nativo), setas no hover do
- * desktop. Cada slide é um link para a ficha porque o carrossel fica acima do
- * link que cobre o card — sem isso o toque viraria clique e o arrasto morreria.
+ * Fotos do card: arrasta no celular (scroll-snap nativo) ou usa as setas.
+ * Cada slide é um link para a ficha porque o carrossel fica acima do link
+ * que cobre o card — sem isso o toque viraria clique e o arrasto morreria.
  */
 export function CardPhotos({
   photos,
@@ -42,7 +42,7 @@ export function CardPhotos({
   }
 
   const arrow =
-    "absolute top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink shadow-sm opacity-0 transition hover:bg-white focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:hidden";
+    "absolute top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink shadow-sm transition hover:scale-105 hover:bg-white pointer-coarse:size-8";
 
   return (
     <>

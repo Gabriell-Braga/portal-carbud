@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { syncFavorites } from "./favorites";
+import { MaskedInput } from "./fields";
 
 type Step = "email" | "code" | "profile";
 type Payload<T> = { ok: true; data: T } | { ok: false; error: string; details?: { reason?: string } | { path: string; message: string }[] };
@@ -112,10 +113,10 @@ export function LoginFlow({ returnTo }: { returnTo: string }) {
         </div>
         <div>
           <label htmlFor="conta-tel" className="mb-1.5 block text-sm font-semibold">Celular (opcional)</label>
-          <input id="conta-tel" name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="(31) 99999-9999" className={input} />
+          <MaskedInput mask="phone" id="conta-tel" name="phone" type="tel" autoComplete="tel" placeholder="(31) 99999-9999" className={input} />
         </div>
         <label className="flex items-start gap-3 text-sm">
-          <input name="marketing" type="checkbox" className="mt-0.5 size-5 shrink-0 accent-brand" />
+          <input name="marketing" type="checkbox" className="checkbox mt-0.5" />
           <span>
             Quero receber novidades e ofertas do Carbud
             <span className="block text-xs text-muted">Opcional. Você pode alterar isso a qualquer momento.</span>
@@ -215,11 +216,11 @@ export function LoginFlow({ returnTo }: { returnTo: string }) {
     <form onSubmit={sendCode} className="space-y-5">
       <div>
         <h1 className="font-display text-2xl font-bold">Entre ou crie sua conta</h1>
-        <p className="mt-1 text-sm text-muted">Uma conta para guardar veículos e encontrá-los em qualquer dispositivo.</p>
+        <p className="mt-1 text-sm text-muted">Salve anúncios e continue de onde parou, em qualquer dispositivo.</p>
       </div>
       {error && <p role="alert" className="rounded-lg bg-brand-soft px-4 py-3 text-sm text-error">{error.message}</p>}
       <div>
-        <label htmlFor="conta-email" className="mb-1.5 block text-sm font-semibold">Seu e-mail</label>
+        <label htmlFor="conta-email" className="mb-1.5 block text-sm font-semibold">E-mail</label>
         <input
           id="conta-email"
           type="email"
@@ -233,12 +234,8 @@ export function LoginFlow({ returnTo }: { returnTo: string }) {
         />
       </div>
       <button disabled={busy} className={primary}>{busy ? "Enviando…" : "Continuar com e-mail"}</button>
-      <div className="text-center text-sm">
-        <p className="font-semibold">É seu primeiro acesso?</p>
-        <p className="text-muted">Você conclui o cadastro após verificar o e-mail.</p>
-      </div>
-      <p className="text-center text-xs text-muted">
-        Ao continuar, você aceita os <Link href="/termos" className="underline hover:text-ink">Termos de Uso</Link> e reconhece a{" "}
+      <p className="border-t border-line pt-5 text-center text-xs text-muted">
+        Primeiro acesso? A conta é criada depois que você confirmar o e-mail. Ao continuar, você aceita os <Link href="/termos" className="underline hover:text-ink">Termos de Uso</Link> e reconhece a{" "}
         <Link href="/privacidade" className="underline hover:text-ink">Política de Privacidade</Link>.
       </p>
     </form>

@@ -227,7 +227,7 @@ export function FavoritesList({ logged, justSaved }: { logged: boolean; justSave
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-line bg-subtle p-8 text-center">
+      <div className="rounded-2xl border border-line bg-white p-8 text-center">
         <p className="font-display text-lg font-semibold">Nenhum carro salvo ainda</p>
         <p className="mt-1 text-sm text-muted">Toque no coração de um anúncio para guardar aqui.</p>
         <Link
@@ -240,52 +240,58 @@ export function FavoritesList({ logged, justSaved }: { logged: boolean; justSave
     );
   }
 
+  // Figma 05 "Favoritos • após autenticação": lista à esquerda, aviso da conta ao lado
   return (
-    <>
-      {logged && justSaved && (
-        <div role="status" className="mb-5 flex items-start gap-2 rounded-xl bg-success/10 p-4 text-sm text-success">
-          <Check className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-          <p>
-            <strong className="block">Veículo salvo!</strong>
-            Você poderá acessá-lo em qualquer dispositivo.
-          </p>
-        </div>
-      )}
-      {!logged && (
-        <div className="mb-5 flex flex-col gap-3 rounded-xl bg-subtle p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-semibold">Salvar na sua conta</p>
-            <p className="text-sm text-muted">Estes favoritos estão só neste navegador. Entre para sincronizar com outros dispositivos.</p>
-          </div>
-          <Link href="/entrar?volta=/favoritos" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-brand px-5 text-sm font-semibold text-white hover:bg-brand-hover">
-            Entrar e salvar
-          </Link>
-        </div>
-      )}
-      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+      <ul className="grid gap-4">
         {items.map((item) => (
-          <li key={item.id} className="group overflow-hidden rounded-2xl border border-line bg-white transition duration-300 ease-out hover:-translate-y-1 hover:shadow-xl">
-            <Link href={item.href} className="block">
-              <div className="aspect-video overflow-hidden bg-subtle">
-                {item.cover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.cover} alt={item.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                ) : (
-                  <CarArt seed={item.id} className="transition-transform duration-500 group-hover:scale-105" />
-                )}
+          <li key={item.id} className="group relative grid gap-4 rounded-2xl border border-line bg-white p-4 transition duration-300 ease-out hover:shadow-lg sm:grid-cols-[240px_minmax(0,1fr)]">
+            <div className="aspect-video overflow-hidden rounded-xl bg-subtle">
+              {item.cover ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={item.cover} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+              ) : (
+                <CarArt seed={item.id} className="transition-transform duration-500 group-hover:scale-105" />
+              )}
+            </div>
+            <div className="flex min-w-0 flex-col">
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="font-display text-base font-bold">{item.title}</h2>
+                <FavoriteButton item={item} className="relative z-10 -mt-1 shrink-0" />
               </div>
-              <div className="p-4">
-                <p className="font-display font-semibold">{item.title}</p>
-                <p className="text-sm text-muted">{item.subtitle}</p>
-                <p className="mt-2 font-display text-xl font-bold">{item.price}</p>
-              </div>
-            </Link>
-            <div className="flex justify-end px-4 pb-4">
-              <FavoriteButton item={item} />
+              <p className="mt-1 text-xs text-muted">{item.subtitle}</p>
+              <p className="mt-3 font-display text-2xl font-bold">{item.price}</p>
+              {/* o link cobre o card; o coração fica acima dele */}
+              <Link
+                href={item.href}
+                className="mt-4 flex min-h-11 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-white after:absolute after:inset-0 after:rounded-2xl hover:bg-brand-hover sm:mt-auto"
+              >
+                Ver anúncio
+              </Link>
             </div>
           </li>
         ))}
       </ul>
-    </>
+
+      <aside className="lg:sticky lg:top-24">
+        {logged ? (
+          <div role="status" className="rounded-2xl bg-success/10 p-5 text-sm text-success">
+            <p className="flex items-center gap-2 font-semibold">
+              <Check className="size-4" aria-hidden="true" />
+              {justSaved ? "Veículo salvo na sua conta" : "Salvos na sua conta"}
+            </p>
+            <p className="mt-2">Seus favoritos ficam disponíveis em outros dispositivos.</p>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-line bg-white p-5">
+            <p className="font-semibold">Salvar na sua conta</p>
+            <p className="mt-1 text-sm text-muted">Estes favoritos estão só neste navegador. Entre para sincronizar com outros dispositivos.</p>
+            <Link href="/entrar?volta=/favoritos" className="mt-4 flex min-h-11 items-center justify-center rounded-lg bg-brand px-5 text-sm font-semibold text-white hover:bg-brand-hover">
+              Entrar e salvar
+            </Link>
+          </div>
+        )}
+      </aside>
+    </div>
   );
 }

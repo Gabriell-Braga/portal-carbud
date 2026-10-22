@@ -1,6 +1,7 @@
-import { CircleUser, Heart, Home, MapPin, Menu, Search } from "lucide-react";
+import { CircleUser, Heart, Home, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import { hasSession } from "~/lib/account";
+import { CityInput } from "./fields";
 
 /** Área do lojista mora no painel Carbud (cadastro de loja e login). */
 function panelHref(path = ""): string {
@@ -54,7 +55,7 @@ export async function Header() {
 
         <Logo className="h-7 lg:h-9" />
 
-        <nav className="ml-auto hidden items-center gap-8 lg:flex" aria-label="Principal">
+        <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex" aria-label="Principal">
           {NAV.map((item) => (
             <Link key={item.label} href={item.href} className="relative py-1 text-sm font-medium text-ink after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-brand after:transition-transform after:duration-300 hover:text-brand hover:after:scale-x-100">
               {item.label}
@@ -62,15 +63,9 @@ export async function Header() {
           ))}
         </nav>
 
-        <form action="/comprar" className="hidden w-56 items-center gap-2 rounded-lg border border-line px-3 lg:flex">
-          <MapPin className="size-4 shrink-0 text-muted" aria-hidden="true" />
+        <form action="/comprar" className="hidden w-56 lg:block">
           <label htmlFor="header-cidade" className="sr-only">Cidade ou CEP</label>
-          <input
-            id="header-cidade"
-            name="cidade"
-            placeholder="Cidade ou CEP"
-            className="h-10 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted"
-          />
+          <CityInput id="header-cidade" />
         </form>
 
         <Link

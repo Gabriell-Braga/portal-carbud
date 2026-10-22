@@ -1,32 +1,37 @@
 import { BODY_TYPE_LABELS, FUEL_LABELS, TRANSMISSION_LABELS } from "~/lib/catalog";
 import type { Facets } from "~/lib/types";
-import { AutoSubmitSelect } from "./filter-panel";
+import { fieldBox } from "./field-box";
+import { CityInput, MaskedInput, Select, type Option } from "./fields";
 
-const input =
-  "h-11 w-full min-w-0 rounded-lg border border-line bg-white px-3 text-sm outline-none placeholder:text-muted focus:border-ink";
+const bare = "h-full w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted";
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
+function Group({ title, htmlFor, children }: { title: string; htmlFor?: string; children: React.ReactNode }) {
   return (
     // legend dentro de fieldset ignora o padding do topo; div + role="group" alinha igual em todo navegador
-    <div role="group" aria-label={title} className="border-b border-line py-4 first:pt-0 last:border-0">
-      <p className="mb-2 text-sm font-semibold" aria-hidden="true">{title}</p>
+    <div role="group" aria-label={title} className="border-b border-line py-4 last:border-0">
+      <label htmlFor={htmlFor} className="mb-2 block text-sm font-semibold">{title}</label>
       {children}
     </div>
   );
 }
 
-function Options({ values, labels }: { values: string[]; labels: Record<string, string> }) {
-  return values.map((value) => (
-    <option key={value} value={value}>
-      {labels[value] ?? value}
-    </option>
-  ));
+/** Dois valores numa caixa só, como no Figma: "Mínimo — Máximo". */
+function Pair({ children }: { children: React.ReactNode }) {
+  return <div className={`${fieldBox} gap-2`}>{children}</div>;
+}
+
+const Dash = () => <span className="text-muted" aria-hidden="true">—</span>;
+
+function options(values: string[], labels: Record<string, string>, all: string): Option[] {
+  return [{ value: "", label: all }, ...values.map((value) => ({ value, label: labels[value] ?? value }))];
 }
 
 /**
- * Filtros da busca. Formulário GET simples: a URL é o estado (spec 02 do
- * handoff), então voltar do anúncio e compartilhar o link preservam tudo.
- * `action` muda quando o mesmo formulário filtra o estoque de uma loja.
+ * Filtros da busca (Figma 03 · Desktop · Listagem). Formulário GET simples: a
+ * URL é o estado (spec 02 do handoff), então voltar do anúncio e compartilhar
+ * o link preservam tudo. `action` muda quando o mesmo formulário filtra o
+ * estoque de uma loja. Versão, condição, vendedor, FIPE e vistoria do Figma
+ * ficam de fora até o painel ter o dado.
  */
 export function FiltersForm({
   action,
@@ -42,97 +47,82 @@ export function FiltersForm({
   const models = facets.brands.find((b) => b.brand === values.marca)?.models ?? [];
 
   return (
-    <form id="filtros" action={action} className="lg:rounded-2xl lg:border lg:border-line lg:p-5">
-      <div className="mb-4 hidden items-center justify-between lg:flex">
-        <h2 className="font-display text-lg font-bold">Filtros</h2>
-        <a href={action} className="text-sm font-semibold text-brand">Limpar</a>
+    <form id="filtros" action={action} className="lg:rounded-2xl lg:border lg:border-line lg:bg-white lg:px-5 lg:pt-5 lg:pb-5">
+      <div className="mb-1 hidden items-center justify-between lg:flex">
+        <h2 className="font-display text-xl font-bold">Filtros</h2>
+        <a href={action} className="text-sm font-semibold text-brand hover:text-brand-hover">Limpar</a>
       </div>
 
-      {/* a ordenação fica fora do painel, ligada a este form por `form="filtros"` */}
-      <Group title="Busca">
-        <label className="sr-only" htmlFor="f-q">Marca, modelo ou palavra-chave</label>
-        <input id="f-q" name="q" type="search" placeholder="Marca, modelo ou palavra-chave" defaultValue={values.q} className={input} />
-      </Group>
+      {/* a busca por texto vem da home; o filtro só a preserva (o chip remove) */}
+      {values.q && <input type="hidden" name="q" value={values.q} />}
 
       {!hideCity && (
-        <Group title="Localização">
-          <label className="sr-only" htmlFor="f-cidade">Cidade</label>
-          <AutoSubmitSelect id="f-cidade" name="cidade" defaultValue={values.cidade ?? ""} className={input}>
-            <option value="">Todas as cidades</option>
-            {facets.cities.map((city) => {
-              const name = city.split(" - ")[0];
-              return <option key={city} value={name}>{city}</option>;
-            })}
-          </AutoSubmitSelect>
+        <Group title="Localização" htmlFor="f-cidade">
+          <CityInput id="f-cidade" cities={facets.cities} defaultValue={values.cidade ?? ""} autoSubmit />
         </Group>
       )}
 
-      <Group title="Marca e modelo">
-        <div className="grid grid-cols-1 gap-2">
-          <label className="sr-only" htmlFor="f-marca">Marca</label>
-          {/* trocar a marca reenvia, para a lista de modelos vir da marca nova */}
-          <AutoSubmitSelect id="f-marca" name="marca" defaultValue={values.marca ?? ""} className={input}>
-            <option value="">Selecionar marca</option>
-            {facets.brands.map((b) => <option key={b.brand} value={b.brand}>{b.brand}</option>)}
-          </AutoSubmitSelect>
-          <label className="sr-only" htmlFor="f-modelo">Modelo</label>
-          <select id="f-modelo" name="modelo" defaultValue={values.modelo ?? ""} disabled={!models.length} className={`${input} disabled:bg-subtle`}>
-            <option value="">{models.length ? "Selecionar modelo" : "Escolha a marca antes"}</option>
-            {models.map((model) => <option key={model} value={model}>{model}</option>)}
-          </select>
-        </div>
+      <Group title="Marca">
+        {/* trocar a marca reenvia, para a lista de modelos vir da marca nova */}
+        <Select
+          name="marca"
+          label="Marca"
+          placeholder="Selecionar marca"
+          defaultValue={values.marca ?? ""}
+          options={[{ value: "", label: "Todas as marcas" }, ...facets.brands.map((b) => ({ value: b.brand, label: b.brand }))]}
+          autoSubmit
+        />
       </Group>
 
-      <Group title="Preço">
-        <div className="grid grid-cols-2 gap-2">
-          <label className="sr-only" htmlFor="f-pmin">Preço mínimo</label>
-          <input id="f-pmin" name="precoMin" inputMode="numeric" placeholder="Mínimo" defaultValue={values.precoMin} className={input} />
-          <label className="sr-only" htmlFor="f-pmax">Preço máximo</label>
-          <input id="f-pmax" name="precoMax" inputMode="numeric" placeholder="Máximo" defaultValue={values.precoMax} className={input} />
-        </div>
+      <Group title="Modelo">
+        <Select
+          name="modelo"
+          label="Modelo"
+          placeholder={models.length ? "Selecionar modelo" : "Escolha a marca antes"}
+          defaultValue={values.modelo ?? ""}
+          options={[{ value: "", label: "Todos os modelos" }, ...models.map((model) => ({ value: model, label: model }))]}
+          disabled={!models.length}
+        />
       </Group>
 
-      <Group title="Ano">
-        <div className="grid grid-cols-2 gap-2">
-          <label className="sr-only" htmlFor="f-amin">Ano mínimo</label>
-          <input id="f-amin" name="anoMin" inputMode="numeric" placeholder="De" defaultValue={values.anoMin} className={input} />
-          <label className="sr-only" htmlFor="f-amax">Ano máximo</label>
-          <input id="f-amax" name="anoMax" inputMode="numeric" placeholder="Até" defaultValue={values.anoMax} className={input} />
-        </div>
+      <Group title="Ano" htmlFor="f-amin">
+        <Pair>
+          <MaskedInput mask="year" id="f-amin" name="anoMin" placeholder="Ano mínimo" aria-label="Ano mínimo" defaultValue={values.anoMin} className={bare} />
+          <Dash />
+          <MaskedInput mask="year" name="anoMax" placeholder="Ano máximo" aria-label="Ano máximo" defaultValue={values.anoMax} className={bare} />
+        </Pair>
       </Group>
 
-      <Group title="Quilometragem">
-        <label className="sr-only" htmlFor="f-km">Quilometragem máxima</label>
-        <input id="f-km" name="kmMax" inputMode="numeric" placeholder="Km máximo" defaultValue={values.kmMax} className={input} />
+      <Group title="Preço" htmlFor="f-pmin">
+        <Pair>
+          <MaskedInput mask="money" id="f-pmin" name="precoMin" placeholder="Mínimo" aria-label="Preço mínimo" defaultValue={values.precoMin} className={bare} />
+          <Dash />
+          <MaskedInput mask="money" name="precoMax" placeholder="Máximo" aria-label="Preço máximo" defaultValue={values.precoMax} className={bare} />
+        </Pair>
+      </Group>
+
+      <Group title="Quilometragem" htmlFor="f-km">
+        <MaskedInput mask="km" id="f-km" name="kmMax" placeholder="KM máximo" defaultValue={values.kmMax} className={fieldBox} />
       </Group>
 
       <Group title="Câmbio">
-        <label className="sr-only" htmlFor="f-cambio">Câmbio</label>
-        <select id="f-cambio" name="cambio" defaultValue={values.cambio ?? ""} className={input}>
-          <option value="">Todos</option>
-          <Options values={facets.transmissions} labels={TRANSMISSION_LABELS} />
-        </select>
+        <Select name="cambio" label="Câmbio" placeholder="Todos" defaultValue={values.cambio ?? ""} options={options(facets.transmissions, TRANSMISSION_LABELS, "Todos")} />
       </Group>
 
       <Group title="Combustível">
-        <label className="sr-only" htmlFor="f-comb">Combustível</label>
-        <select id="f-comb" name="combustivel" defaultValue={values.combustivel ?? ""} className={input}>
-          <option value="">Todos</option>
-          <Options values={facets.fuels} labels={FUEL_LABELS} />
-        </select>
+        <Select name="combustivel" label="Combustível" placeholder="Todos" defaultValue={values.combustivel ?? ""} options={options(facets.fuels, FUEL_LABELS, "Todos")} />
       </Group>
 
       <Group title="Carroceria">
-        <label className="sr-only" htmlFor="f-carroceria">Carroceria</label>
-        <select id="f-carroceria" name="carroceria" defaultValue={values.carroceria ?? ""} className={input}>
-          <option value="">Todas</option>
-          <Options values={facets.bodyTypes} labels={BODY_TYPE_LABELS} />
-        </select>
+        <Select name="carroceria" label="Carroceria" placeholder="Todas" defaultValue={values.carroceria ?? ""} options={options(facets.bodyTypes, BODY_TYPE_LABELS, "Todas")} />
       </Group>
 
-      <button className="mt-2 hidden h-11 w-full rounded-lg bg-brand text-sm font-semibold text-white hover:bg-brand-hover lg:block">
-        Aplicar filtros
-      </button>
+      <div className="mt-2 hidden space-y-2 lg:block">
+        <button className="h-11 w-full rounded-lg bg-brand text-sm font-semibold text-white hover:bg-brand-hover">Aplicar filtros</button>
+        <a href={action} className="flex h-11 w-full items-center justify-center rounded-lg border border-line text-sm font-semibold hover:border-ink">
+          Limpar filtros
+        </a>
+      </div>
     </form>
   );
 }

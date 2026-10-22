@@ -2,7 +2,8 @@ import { BadgeCheck, MapPin, Phone, Store } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AutoSubmitSelect, FilterPanel } from "~/components/filter-panel";
+import { Select } from "~/components/fields";
+import { FilterPanel } from "~/components/filter-panel";
 import { FiltersForm } from "~/components/filters-form";
 import { EmptyResults, Pagination, VehicleGrid } from "~/components/results";
 import { SORTS } from "~/lib/catalog";
@@ -89,12 +90,10 @@ export default async function DealerPage({ params, searchParams }: Props) {
               {result.total} {result.total === 1 ? "veículo" : "veículos"} na {site.name}
               {where ? ` • ${where}` : ""}
             </h2>
-            <label className="flex items-center gap-2 text-sm text-muted">
+            <div className="flex items-center gap-2 text-sm text-muted">
               Ordenar por
-              <AutoSubmitSelect form="filtros" name="ordem" defaultValue={values.ordem ?? "recentes"} className="h-10 rounded-lg border border-line bg-white px-3 text-sm text-ink">
-                {SORTS.map((sort) => <option key={sort.value} value={sort.value}>{sort.label}</option>)}
-              </AutoSubmitSelect>
-            </label>
+              <Select form="filtros" name="ordem" label="Ordenar por" placeholder="Mais recentes" defaultValue={values.ordem ?? "recentes"} options={SORTS} autoSubmit className="w-48" />
+            </div>
           </div>
           <div className="mt-5">
             {result.vehicles.length ? (
