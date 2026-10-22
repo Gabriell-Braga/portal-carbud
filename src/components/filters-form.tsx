@@ -125,8 +125,8 @@ export function FiltersForm({
         <input id="f-fipe" type="checkbox" name="abaixoFipe" value="1" defaultChecked={values.abaixoFipe === "1"} className="switch" />
       </div>
 
-      <div className="mt-2 hidden space-y-2 lg:block">
-        <button className="h-11 w-full rounded-lg bg-brand text-sm font-semibold text-white hover:bg-brand-hover">Aplicar filtros</button>
+      {/* no desktop o FilterPanel filtra a cada mudança; sem botão de aplicar */}
+      <div className="mt-2 hidden lg:block">
         <a href={action} className="flex h-11 w-full items-center justify-center rounded-lg border border-line text-sm font-semibold hover:border-ink">
           Limpar filtros
         </a>

@@ -85,7 +85,10 @@ export function Select({
     setValue(option.value);
     setOpen(false);
     if (hidden.current) hidden.current.value = option.value;
-    if (autoSubmit && option.value !== value) hidden.current?.form?.requestSubmit();
+    if (option.value === value) return;
+    if (autoSubmit) hidden.current?.form?.requestSubmit();
+    // hidden não dispara change sozinho; o FilterPanel escuta para filtrar no desktop
+    else hidden.current?.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
   function onKeyDown(event: React.KeyboardEvent) {

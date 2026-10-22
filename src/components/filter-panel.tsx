@@ -1,15 +1,52 @@
 "use client";
 
 import { SlidersHorizontal, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Casca dos filtros: no desktop fica sempre aberta na lateral; no mobile vira
  * a tela "Filtrar veículos" do Figma, com o CTA fixo no pé.
  * O formulário em si é HTML puro (GET para /comprar) e funciona sem JS.
+ *
+ * No desktop cada mudança já filtra; no mobile vale o botão do pé, porque
+ * recarregar a cada toque fecharia a tela de filtros no meio da escolha.
  */
 export function FilterPanel({ total, children }: { total: number; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    let pending: HTMLFormElement | null = null;
+    const typing = (node: EventTarget | null) =>
+      node instanceof HTMLInputElement && node.type !== "checkbox" && node.type !== "hidden" && el.contains(node);
+
+    function onChange(event: Event) {
+      const form = (event.target as HTMLInputElement).form;
+      if (!desktop.matches || !form) return;
+      // espera o foco assentar: indo de "mínimo" para "máximo", só filtra ao sair dos campos de texto
+      setTimeout(() => {
+        if (typing(document.activeElement)) pending = form;
+        else form.requestSubmit();
+      });
+    }
+
+    function onFocusOut(event: FocusEvent) {
+      if (pending && !typing(event.relatedTarget)) {
+        pending.requestSubmit();
+        pending = null;
+      }
+    }
+
+    el.addEventListener("change", onChange);
+    el.addEventListener("focusout", onFocusOut);
+    return () => {
+      el.removeEventListener("change", onChange);
+      el.removeEventListener("focusout", onFocusOut);
+    };
+  }, []);
 
   return (
     <>
@@ -35,7 +72,7 @@ export function FilterPanel({ total, children }: { total: number; children: Reac
           <p className="font-display font-semibold">Filtrar veículos</p>
           <a href="/comprar" className="px-2 text-sm font-semibold text-brand">Limpar</a>
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-4 lg:overflow-visible lg:p-0">{children}</div>
+        <div ref={root} className="flex-1 overflow-y-auto px-4 py-4 lg:overflow-visible lg:p-0">{children}</div>
         {/* o botão de envio do mobile submete o formulário pelo id */}
         <div className="border-t border-line p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:hidden">
           <button form="filtros" className="h-12 w-full rounded-lg bg-brand text-sm font-semibold text-white">
