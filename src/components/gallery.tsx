@@ -1,20 +1,23 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { VehiclePhoto } from "~/lib/types";
 import { CarArt } from "./car-art";
+import { Lightbox } from "./lightbox";
 
 /**
  * Galeria da ficha: foto em 4:3 (o formato em que as lojas fotografam, então
  * nada é cortado), arrasto no celular por scroll-snap e setas sempre à vista.
  * As miniaturas são uma fileira que rola sozinha até a foto atual.
- * Sem foto, a ilustração do Figma ocupa o lugar.
+ * Sem foto, a ilustração do Figma ocupa o lugar. Clicar na foto abre em tela
+ * cheia, com zoom (`Lightbox`).
  */
 export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title: string; seed: string }) {
   const track = useRef<HTMLDivElement>(null);
   const thumbs = useRef<HTMLUListElement>(null);
   const [index, setIndex] = useState(0);
+  const [open, setOpen] = useState<number | null>(null);
   // alvo da rolagem em curso: dois cliques seguidos somam, em vez de ler o meio do caminho
   const goal = useRef(0);
 
@@ -60,6 +63,7 @@ export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title
           onKeyDown={(event) => {
             if (event.key === "ArrowLeft") show(goal.current - 1);
             if (event.key === "ArrowRight") show(goal.current + 1);
+            if (event.key === "Enter") setOpen(goal.current);
           }}
           tabIndex={0}
           aria-label={`Fotos de ${title}`}
@@ -73,10 +77,15 @@ export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title
               alt={`${title}, foto ${i + 1} de ${photos.length}`}
               loading={i === 0 ? "eager" : "lazy"}
               draggable={false}
-              className="h-full w-full shrink-0 snap-start object-cover"
+              onClick={() => setOpen(i)}
+              className="h-full w-full shrink-0 cursor-zoom-in snap-start object-cover"
             />
           ))}
         </div>
+
+        <button type="button" onClick={() => setOpen(index)} aria-label="Ampliar foto" className="absolute top-3 right-3 z-10 grid size-10 place-items-center rounded-full bg-ink/70 text-white shadow transition hover:scale-105 hover:bg-ink/85">
+          <Expand className="size-4" aria-hidden="true" />
+        </button>
 
         {photos.length > 1 && (
           <>
@@ -111,6 +120,8 @@ export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title
           ))}
         </ul>
       )}
+
+      {open !== null && <Lightbox photos={photos.map((photo) => photo.full)} start={open} title={title} onClose={() => setOpen(null)} />}
     </div>
   );
 }
