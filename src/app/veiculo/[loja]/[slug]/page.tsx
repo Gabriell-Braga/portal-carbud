@@ -11,6 +11,7 @@ import { VehicleGrid } from "~/components/results";
 import { Viewer360 } from "~/components/viewer-360";
 import { km, place, price } from "~/lib/format";
 import { fetchDealer, fetchVehicle, searchVehicles } from "~/lib/panel";
+import { slug as toSlug } from "~/lib/search-path";
 import { siteUrl } from "~/lib/site";
 import type { Dealer } from "~/lib/types";
 
@@ -121,8 +122,8 @@ export default async function VehiclePage({ params }: Props) {
 
       <nav aria-label="Trilha" className="mt-4 truncate text-xs text-muted">
         <Link href="/" className="hover:text-ink">Início</Link> /{" "}
-        <Link href={`/comprar?marca=${encodeURIComponent(vehicle.brand)}`} className="hover:text-ink">{vehicle.brand}</Link> /{" "}
-        <Link href={`/comprar?marca=${encodeURIComponent(vehicle.brand)}&modelo=${encodeURIComponent(vehicle.model)}`} className="hover:text-ink">{vehicle.model}</Link>
+        <Link href={`/comprar/${toSlug(vehicle.brand)}`} className="hover:text-ink">{vehicle.brand}</Link> /{" "}
+        <Link href={`/comprar/${toSlug(vehicle.brand)}/${toSlug(vehicle.model)}`} className="hover:text-ink">{vehicle.model}</Link>
         {vehicle.version && <> / <span>{vehicle.version}</span></>}
       </nav>
 

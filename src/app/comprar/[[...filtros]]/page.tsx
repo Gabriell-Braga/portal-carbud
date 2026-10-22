@@ -1,61 +1,94 @@
 import { X } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Select } from "~/components/fields";
 import { FilterPanel } from "~/components/filter-panel";
 import { FiltersForm } from "~/components/filters-form";
-import { EmptyResults, Pagination, VehicleGrid, withParam } from "~/components/results";
+import { EmptyResults, Pagination, VehicleGrid } from "~/components/results";
 import { FILTER_KEYS, SORTS, filterLabel } from "~/lib/catalog";
 import { cityFromCep, cepDigits } from "~/lib/cep";
 import { searchVehicles, toSearchParams, type Query } from "~/lib/panel";
+import { parseSearchPath, searchPath, type SearchValues } from "~/lib/search-path";
 
-type Props = { searchParams: Promise<Query> };
+type Props = { params: Promise<{ filtros?: string[] }>; searchParams: Promise<Query> };
 
-export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const query = await searchParams;
-  const city = typeof query.cidade === "string" ? query.cidade : null;
-  const brand = typeof query.marca === "string" ? query.marca : null;
-  const subject = [brand, "carros usados e seminovos"].filter(Boolean).join(" ");
+/** Caminho (cidade, marca, modelo) + query; a query vence, porque é o que o formulário acabou de mandar. */
+async function resolve({ params, searchParams }: Props) {
+  // busca sem filtro só pelo catálogo: é por ele que o slug do caminho volta ao nome
+  const [{ filtros = [] }, query, catalog] = await Promise.all([params, searchParams, searchVehicles().then((r) => r.facets)]);
+  const fromPath = parseSearchPath(filtros, catalog);
+  const values: SearchValues | null = fromPath && { ...fromPath, ...Object.fromEntries(toSearchParams(query)) };
+  return { filtros, query, catalog, values };
+}
+
+function heading(values: SearchValues) {
+  const what = [values.marca, values.modelo].filter(Boolean).join(" ");
+  const text = what ? `${what} usados e seminovos` : "Carros usados e seminovos";
+  return values.cidade ? `${text} em ${values.cidade}` : text;
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { values, catalog, query } = await resolve(props);
+  if (!values) return {};
+  const [path] = searchPath(values, catalog).split("?");
   return {
-    title: city ? `${subject} em ${city}` : subject.charAt(0).toUpperCase() + subject.slice(1),
-    alternates: { canonical: "/comprar" },
-    // combinação de filtros não é página para indexar; a listagem limpa é
+    title: heading(values),
+    alternates: { canonical: path },
+    // cidade/marca/modelo no caminho são páginas para indexar; o resto dos filtros não
     robots: Object.keys(query).length ? { index: false, follow: true } : undefined,
   };
 }
 
-export default async function BuyPage({ searchParams }: Props) {
-  const query = await searchParams;
-  const params = toSearchParams(query);
-  const values = Object.fromEntries(params.entries());
+export default async function BuyPage(props: Props) {
+  const { filtros, query, catalog, values: resolved } = await resolve(props);
+  if (!resolved) notFound();
+  const values = resolved;
 
   // "Cidade ou CEP": CEP vira a cidade dele, e a URL passa a mostrar a cidade
   const cep = cepDigits(values.cidade);
   if (cep) {
     const found = await cityFromCep(cep);
     if (found) {
-      params.set("cidade", found.city);
-      if (found.state) params.set("uf", found.state);
-      redirect(`/comprar?${params}`);
+      values.cidade = found.city;
+      if (found.state) values.uf = found.state;
     }
   }
 
-  const result = await searchVehicles(query);
+  // o formulário manda GET para /comprar; aqui a busca vai para o endereço canônico, sem campo vazio nem ordem padrão
+  if (values.ordem === "recentes") delete values.ordem;
+  const canonical = searchPath(values, catalog);
+  const raw = new URLSearchParams(Object.entries(query).flatMap(([key, value]) => [value ?? ""].flat().map((v) => [key, v]))).toString();
+  const current = `/comprar${filtros.map((s) => `/${s}`).join("")}${raw ? `?${raw}` : ""}`;
+  if (canonical !== current) redirect(canonical);
 
+  const result = await searchVehicles(values);
+
+  const [base, qs = ""] = canonical.split("?");
   const applied = FILTER_KEYS.filter((key) => values[key] && key !== "loja");
+  const without = (key: string) => searchPath({ ...values, [key]: undefined, ...(key === "marca" && { modelo: undefined }), ...(key === "cidade" && { uf: undefined }), pagina: undefined }, catalog);
   const where = values.cidade ? ` em ${values.cidade}` : "";
+  const trail = [
+    values.cidade && { label: values.cidade, href: searchPath({ cidade: values.cidade, uf: values.uf }, catalog) },
+    values.marca && { label: values.marca, href: searchPath({ cidade: values.cidade, uf: values.uf, marca: values.marca }, catalog) },
+    values.modelo && { label: values.modelo, href: searchPath({ cidade: values.cidade, uf: values.uf, marca: values.marca, modelo: values.modelo }, catalog) },
+  ].filter((item) => !!item);
 
   return (
     <div className="mx-auto max-w-[1240px] px-4 lg:px-6">
       <nav aria-label="Trilha" className="mt-4 text-xs text-muted">
-        <Link href="/" className="hover:text-ink">Início</Link> / <span>Comprar</span>
+        <Link href="/" className="hover:text-ink">Início</Link> / <Link href="/comprar" className="hover:text-ink">Comprar</Link>
+        {trail.map((item) => (
+          <span key={item.href}>
+            {" "}/ <Link href={item.href} className="hover:text-ink">{item.label}</Link>
+          </span>
+        ))}
       </nav>
 
       <div className="mt-4 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8">
         <div className="hidden lg:block" />
         <header>
-          <h1 className="font-display text-2xl font-bold lg:text-3xl">Carros usados e seminovos à venda</h1>
+          <h1 className="font-display text-2xl font-bold lg:text-3xl">{heading(values)} à venda</h1>
           <p className="mt-1 text-sm text-muted">
             {result.total.toLocaleString("pt-BR")} {result.total === 1 ? "veículo disponível" : "veículos disponíveis"}
             {where}
@@ -88,7 +121,7 @@ export default async function BuyPage({ searchParams }: Props) {
               {applied.map((key, index) => (
                 <Link
                   key={key}
-                  href={withParam("/comprar", params, key, null)}
+                  href={without(key)}
                   aria-label={`Remover filtro ${filterLabel(key, values[key]!)}`}
                   className={`inline-flex min-h-8 items-center gap-1 rounded-full px-3 text-xs font-semibold ${
                     index === 0 ? "bg-brand text-white hover:bg-brand-hover" : "border border-line bg-white hover:border-brand hover:text-brand"
@@ -106,7 +139,7 @@ export default async function BuyPage({ searchParams }: Props) {
           {result.vehicles.length ? (
             <>
               <VehicleGrid vehicles={result.vehicles} />
-              <Pagination base="/comprar" params={params} page={result.page} pageSize={result.pageSize} total={result.total} />
+              <Pagination base={base} params={new URLSearchParams(qs)} page={result.page} pageSize={result.pageSize} total={result.total} />
             </>
           ) : (
             <EmptyResults clearHref="/comprar" />
