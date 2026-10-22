@@ -258,7 +258,7 @@ export function FavoritesList({ logged, justSaved }: { logged: boolean; justSave
       <ul className="grid gap-4">
         {items.map((item) => (
           <li key={item.id} className="group relative grid gap-4 rounded-2xl border border-line bg-white p-4 transition duration-300 ease-out hover:shadow-lg has-[[data-pending]]:pointer-events-none sm:grid-cols-[240px_minmax(0,1fr)]">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-subtle">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-subtle">
               <CardPhotos
                 photos={(item.photos ?? []).map((url) => ({ id: url, thumb: url, card: url, full: url }))}
                 cover={item.cover}

@@ -104,7 +104,7 @@ export default async function HomePage() {
               {showcase.map((vehicle, index) => (
                 <li key={vehicle.id} className="w-[78%] shrink-0 snap-start lg:w-auto">
                   <article className="group relative overflow-hidden rounded-xl border border-line transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg has-[[data-pending]]:pointer-events-none">
-                    <div className="relative aspect-video overflow-hidden bg-subtle">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-subtle">
                       <CardPhotos photos={vehicle.photos} cover={vehicle.coverUrl} title={vehicle.title} seed={vehicle.id} href={vehicleHref(vehicle)} priority={index === 0} />
                     </div>
                     <div className="flex items-start justify-between gap-3 p-3">
