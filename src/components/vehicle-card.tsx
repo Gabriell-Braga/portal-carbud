@@ -82,7 +82,11 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
 
         <div className="mt-auto pt-4">
           <p className="font-display text-2xl font-bold leading-tight">{label}</p>
-          <span className="mt-4 flex min-h-12 items-center justify-center rounded-xl bg-ink text-sm font-semibold text-white transition duration-300 group-hover:bg-brand">
+          <span
+            className={`mt-4 flex min-h-12 items-center justify-center rounded-xl text-sm font-semibold text-white transition duration-300 ${
+              vehicle.featured ? "bg-brand group-hover:bg-brand-hover" : "bg-ink group-hover:bg-brand"
+            }`}
+          >
             Ver oferta
           </span>
         </div>
