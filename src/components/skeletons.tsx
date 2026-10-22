@@ -4,18 +4,15 @@ const bone = "rounded bg-subtle";
 
 export function CardSkeleton() {
   return (
-    <div className="flex flex-col rounded-2xl border border-line p-3">
-      <div className="aspect-[16/10] rounded-xl bg-subtle" />
-      <div className="flex flex-col px-1 pt-4">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-line">
+      <div className="aspect-[4/3] bg-subtle" />
+      <div className="flex flex-col p-4">
         <div className={`h-4 w-1/2 ${bone}`} />
         <div className={`mt-2 h-3 w-3/4 ${bone}`} />
-        <div className={`mt-3 h-4 w-2/3 ${bone}`} />
-        <div className={`mt-2 h-3 w-1/3 ${bone}`} />
-        <div className="mt-4 space-y-2 border-t border-line pt-3">
-          <div className={`h-3 w-1/4 ${bone}`} />
-          <div className={`h-7 w-2/5 ${bone}`} />
-        </div>
-        <div className="mt-4 h-12 rounded-xl border border-line" />
+        <div className={`mt-4 h-4 w-2/3 ${bone}`} />
+        <div className={`mt-3 h-4 w-1/2 ${bone}`} />
+        <div className={`mt-5 h-7 w-2/5 ${bone}`} />
+        <div className="mt-4 h-12 rounded-xl bg-subtle" />
       </div>
     </div>
   );

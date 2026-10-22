@@ -42,7 +42,7 @@ Windows: derrube o `npm run dev` antes de `npm run build` e apague `.next` entre
 
 ## Design
 
-Fonte da verdade: Figma "Benchmark UX Automotivo — CarGurus × Webmotors × OLX | Wireframes" (páginas 01–05: mobile, contato e estados, desktop, sistema de design, handoff). Tokens em `src/app/globals.css` (`@theme`): `brand #C6000F`, Sora (títulos, `font-display`) + Inter. Card: mídia em caixa própria 16:9 com overflow escondido, texto empilhado abaixo, nada por cima da foto além de selos. Mobile-first; validar em 360/390/768/1024/1440.
+Fonte da verdade: Figma "Benchmark UX Automotivo — CarGurus × Webmotors × OLX | Wireframes" (páginas 01–05: mobile, contato e estados, desktop, sistema de design, handoff). Tokens em `src/app/globals.css` (`@theme`): `brand #C6000F`, Sora (títulos, `font-display`) + Inter. Card de carro: foto 4:3 sangrando no topo, por cima só coração, setas (só no hover) e contador "n/N"; selos e texto empilhados abaixo. Mobile-first; validar em 360/390/768/1024/1440.
 
 Fora de propósito (não inventar dado): chat em tempo real, avaliações. Só entram quando o painel tiver o dado.
 

@@ -45,7 +45,8 @@ export function CardPhotos({
   }
 
   const arrow =
-    "absolute top-1/2 z-10 grid size-8 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink shadow-sm transition hover:scale-105 hover:bg-white";
+    // setas só no hover (no toque o arrasto basta); o foco pelo teclado também as mostra
+    "pointer-events-none absolute top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink opacity-0 shadow-sm transition hover:scale-105 hover:bg-white focus-visible:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100";
 
   return (
     <>
@@ -77,23 +78,9 @@ export function CardPhotos({
           <button type="button" onClick={() => show(goal.current + 1)} aria-label="Próxima foto" className={`${arrow} right-2`}>
             <ChevronRight className="size-4" aria-hidden="true" />
           </button>
-          {/* bolinha é botão: o padding dá área de toque sem aumentar o desenho */}
-          <div className="absolute inset-x-0 bottom-1 z-10 flex justify-center">
-            {urls.map((url, i) => (
-              <button
-                key={url}
-                type="button"
-                onClick={() => show(i)}
-                aria-label={`Ver foto ${i + 1} de ${urls.length}`}
-                aria-current={i === index}
-                className="group/dot grid h-5 place-items-center px-0.5"
-              >
-                <span
-                  className={`block h-1.5 rounded-full bg-white shadow-sm transition-all duration-300 ${i === index ? "w-4" : "w-1.5 opacity-60 group-hover/dot:opacity-100"}`}
-                />
-              </button>
-            ))}
-          </div>
+          <span className="pointer-events-none absolute bottom-2.5 left-2.5 z-10 rounded-md bg-black/60 px-2 py-0.5 text-xs font-semibold tabular-nums text-white">
+            {index + 1}/{urls.length}
+          </span>
         </>
       )}
     </>
