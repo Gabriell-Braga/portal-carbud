@@ -20,9 +20,9 @@ export function ShareButton({ title }: { title: string }) {
   }
 
   return (
-    <button type="button" onClick={share} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-hover">
+    <button type="button" onClick={share} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line px-3 text-sm font-semibold text-brand hover:border-brand hover:text-brand-hover">
       {copied ? <Check className="size-4" aria-hidden="true" /> : <Share2 className="size-4" aria-hidden="true" />}
-      <span aria-live="polite">{copied ? "Link copiado" : "Compartilhar anúncio"}</span>
+      <span aria-live="polite">{copied ? "Link copiado" : "Compartilhar"}</span>
     </button>
   );
 }

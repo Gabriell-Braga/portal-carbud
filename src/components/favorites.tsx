@@ -3,6 +3,7 @@
 import { Check, Heart, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { CardPhotos } from "./card-photos";
 import { CarArt } from "./car-art";
 import { GridSkeleton } from "./skeletons";
 
@@ -21,6 +22,8 @@ export type FavoriteItem = {
   subtitle: string;
   price: string;
   cover: string | null;
+  /** Fotos do carrossel; favorito salvo antes disso só tem a capa. */
+  photos?: string[];
 };
 
 const KEY = "carbud:favoritos";
@@ -103,8 +106,15 @@ function useFavorites(): FavoriteItem[] | null {
 
 /** `small`: dentro da foto do card, onde 44px cobre as setas e o selo. */
 export function FavoriteButton({ item, small = false, className = "" }: { item: FavoriteItem; small?: boolean; className?: string }) {
-  const saved = (useFavorites() ?? []).some((it) => it.id === item.id);
+  const stored = (useFavorites() ?? []).find((it) => it.id === item.id);
+  const saved = !!stored;
   const [invite, setInvite] = useState(false);
+
+  // favorito salvo antes do carrossel só tem a capa: o card atual completa as fotos
+  const missingPhotos = !!stored && !stored.photos?.length && !!item.photos?.length;
+  useEffect(() => {
+    if (missingPhotos) write(read().map((it) => (it.id === item.id ? { ...it, photos: item.photos } : it)));
+  }, [missingPhotos, item.id, item.photos]);
 
   return (
     <>
@@ -247,13 +257,15 @@ export function FavoritesList({ logged, justSaved }: { logged: boolean; justSave
       <ul className="grid gap-4">
         {items.map((item) => (
           <li key={item.id} className="group relative grid gap-4 rounded-2xl border border-line bg-white p-4 transition duration-300 ease-out hover:shadow-lg sm:grid-cols-[240px_minmax(0,1fr)]">
-            <div className="aspect-video overflow-hidden rounded-xl bg-subtle">
-              {item.cover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.cover} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-              ) : (
-                <CarArt seed={item.id} className="transition-transform duration-500 group-hover:scale-105" />
-              )}
+            <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-subtle">
+              <CardPhotos
+                photos={(item.photos ?? []).map((url) => ({ id: url, thumb: url, card: url, full: url }))}
+                cover={item.cover}
+                title={item.title}
+                seed={item.id}
+                href={item.href}
+                priority={false}
+              />
             </div>
             <div className="flex min-w-0 flex-col">
               <div className="flex items-start justify-between gap-3">

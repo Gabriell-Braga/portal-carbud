@@ -127,13 +127,16 @@ export default async function VehiclePage({ params }: Props) {
 
       <div className="mt-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-display text-2xl font-bold lg:text-3xl">{vehicle.title}</h1>
-          <p className="mt-1 text-sm text-muted">{summary}</p>
-          <ShareButton title={vehicle.title} />
+          {/* compartilhar na linha do título: embaixo dele empurrava as fotos para baixo */}
+          <div className="flex flex-wrap items-center gap-x-4">
+            <h1 className="font-display text-2xl font-bold lg:text-3xl">{vehicle.title}</h1>
+            <ShareButton title={vehicle.title} />
+          </div>
+          <p className="text-sm text-muted">{summary}</p>
         </div>
         <FavoriteButton
           className="shrink-0"
-          item={{ id: vehicle.id, href: `/veiculo/${dealer.slug}/${vehicle.slug}`, title: vehicle.title, subtitle: `${vehicle.yearLabel} • ${km(vehicle.mileageKm)}`, price: label, cover: vehicle.coverUrl }}
+          item={{ id: vehicle.id, href: `/veiculo/${dealer.slug}/${vehicle.slug}`, title: vehicle.title, subtitle: `${vehicle.yearLabel} • ${km(vehicle.mileageKm)}`, price: label, cover: vehicle.coverUrl, photos: vehicle.photos.map((photo) => photo.card || photo.full) }}
         />
       </div>
 

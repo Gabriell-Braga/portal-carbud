@@ -109,10 +109,10 @@ export function ContactActions({ dealer, dealerName, vehicle, hasWhatsapp, varia
       <dialog
         ref={dialog}
         aria-labelledby={`contato-${variant}`}
-        className="m-0 h-dvh max-h-none w-full max-w-none bg-white p-0 backdrop:bg-ink/50 sm:m-auto sm:h-auto sm:max-h-[90dvh] sm:max-w-lg sm:rounded-2xl"
+        className="m-0 h-dvh max-h-none w-full max-w-none bg-white p-0 backdrop:bg-ink/50 sm:m-auto sm:h-auto sm:max-h-[92dvh] sm:w-[min(640px,calc(100%-2rem))] sm:max-w-none sm:rounded-2xl"
       >
         <div className="flex max-h-[inherit] min-h-full flex-col">
-          <div className="flex items-center justify-between border-b border-line px-4 py-2 sm:px-6">
+          <div className="flex items-center justify-between border-b border-line px-4 py-2 sm:px-10">
             <p className="text-sm text-muted">{dealerName}</p>
             <button type="button" onClick={() => dialog.current?.close()} aria-label="Fechar" className="grid size-11 place-items-center">
               <X className="size-5" aria-hidden="true" />
@@ -120,7 +120,7 @@ export function ContactActions({ dealer, dealerName, vehicle, hasWhatsapp, varia
           </div>
 
           {state.step === "done" ? (
-            <div className="flex flex-1 flex-col px-4 py-8 sm:px-6">
+            <div className="flex flex-1 flex-col px-4 py-8 sm:px-10 sm:py-10">
               <div className="mx-auto grid size-20 place-items-center rounded-full bg-success/10 text-success">
                 <Check className="size-10" aria-hidden="true" />
               </div>
@@ -163,7 +163,7 @@ export function ContactActions({ dealer, dealerName, vehicle, hasWhatsapp, varia
               noValidate
               className="flex flex-1 flex-col overflow-y-auto"
             >
-              <div className="flex-1 px-4 py-5 sm:px-6">
+              <div className="flex-1 px-4 py-5 sm:px-10 sm:py-8">
                 <h2 id={`contato-${variant}`} className="font-display text-2xl font-bold">
                   {whatsapp ? "Continuar no WhatsApp" : `Vamos falar sobre o ${vehicle.model}?`}
                 </h2>
@@ -203,7 +203,7 @@ export function ContactActions({ dealer, dealerName, vehicle, hasWhatsapp, varia
 
                   <div>
                     <label className="flex items-start gap-3 text-sm">
-                      <input name="consent" type="checkbox" aria-invalid={!!fields.consent} className="checkbox mt-0.5" />
+                      <input name="consent" type="checkbox" defaultChecked aria-invalid={!!fields.consent} className="checkbox mt-0.5" />
                       <span>
                         Autorizo o compartilhamento dos meus dados com a loja para responder meu interesse.{" "}
                         <Link href="/privacidade" target="_blank" className="text-brand underline">Política de Privacidade</Link>
@@ -215,7 +215,7 @@ export function ContactActions({ dealer, dealerName, vehicle, hasWhatsapp, varia
               </div>
 
               {/* CTA fixo fora do conteúdo rolável, como pede o contrato responsivo */}
-              <div className="sticky bottom-0 border-t border-line bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-6">
+              <div className="sticky bottom-0 border-t border-line bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-10 sm:py-6">
                 <button
                   disabled={state.step === "sending"}
                   className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-lg text-sm font-semibold text-white disabled:opacity-60 ${whatsapp ? "bg-whatsapp" : "bg-brand hover:bg-brand-hover"}`}

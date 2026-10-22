@@ -49,6 +49,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
               subtitle: `${vehicle.yearLabel} • ${km(vehicle.mileageKm)}`,
               price: label,
               cover: vehicle.coverUrl,
+              photos: vehicle.photos.map((photo) => photo.card || photo.full),
             }}
           />
         </div>
