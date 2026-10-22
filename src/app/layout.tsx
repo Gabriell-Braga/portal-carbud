@@ -24,12 +24,14 @@ export const viewport: Viewport = { themeColor: "#c6000f" };
 export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${sora.variable}`}>
-      <body className="font-sans antialiased">
+      {/* coluna da altura da tela: o rodapé fica no pé mesmo com pouco conteúdo */}
+      <body className="flex min-h-dvh flex-col font-sans antialiased">
         <a href="#conteudo" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:p-3">
           Pular para o conteúdo
         </a>
         <Header />
-        <main id="conteudo">{children}</main>
+        {/* página de fundo cinza (conta, entrar, favoritos) pinta também a sobra até o rodapé */}
+        <main id="conteudo" className="flex-1 has-[>.bg-subtle]:bg-subtle">{children}</main>
         <Footer />
         <TabBar />
         {modal}
