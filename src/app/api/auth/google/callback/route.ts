@@ -28,7 +28,10 @@ export async function GET(request: Request) {
   const code = url.searchParams.get("code");
   // sem code = a pessoa cancelou na tela do Google; volta para o login sem alarde
   if (!code) return back("");
-  if (!saved || saved.state !== url.searchParams.get("state")) return back("erro=google");
+  if (!saved || saved.state !== url.searchParams.get("state")) {
+    console.error("[google] state não confere", { temCookie: !!saved });
+    return back("erro=google");
+  }
 
   const exchange = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -41,12 +44,19 @@ export async function GET(request: Request) {
       grant_type: "authorization_code",
     }),
   }).catch(() => null);
-  const tokens = (await exchange?.json().catch(() => null)) as { id_token?: string } | null;
-  if (!tokens?.id_token) return back("erro=google");
+  const tokens = (await exchange?.json().catch(() => null)) as { id_token?: string; error?: string; error_description?: string } | null;
+  if (!tokens?.id_token) {
+    // erro do Google vem sem segredo: "invalid_client", "redirect_uri_mismatch"...
+    console.error("[google] troca do código falhou", exchange?.status, tokens?.error, tokens?.error_description);
+    return back("erro=google");
+  }
 
   const response = await panelAccount("auth/google", { method: "POST", body: JSON.stringify({ idToken: tokens.id_token }) }, null).catch(() => null);
-  const payload = (await response?.json().catch(() => null)) as { ok: boolean; data: { token: string; expiresAt: string } } | null;
-  if (!payload?.ok) return back("erro=google");
+  const payload = (await response?.json().catch(() => null)) as { ok: true; data: { token: string; expiresAt: string } } | { ok: false; error: string } | null;
+  if (!payload?.ok) {
+    console.error("[google] painel recusou", response?.status, payload && !payload.ok ? payload.error : "sem resposta");
+    return back("erro=google");
+  }
 
   saveSession(jar, payload.data.token, payload.data.expiresAt);
   return back("sincronizar=1");
