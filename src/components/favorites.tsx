@@ -101,7 +101,8 @@ function useFavorites(): FavoriteItem[] | null {
   }
 }
 
-export function FavoriteButton({ item, className = "" }: { item: FavoriteItem; className?: string }) {
+/** `small`: dentro da foto do card, onde 44px cobre as setas e o selo. */
+export function FavoriteButton({ item, small = false, className = "" }: { item: FavoriteItem; small?: boolean; className?: string }) {
   const saved = (useFavorites() ?? []).some((it) => it.id === item.id);
   const [invite, setInvite] = useState(false);
 
@@ -118,9 +119,9 @@ export function FavoriteButton({ item, className = "" }: { item: FavoriteItem; c
           if (loggedIn()) void remote(saved ? "DELETE" : "PUT", saved ? item.id : item);
           else if (!saved && !seenInvite()) setInvite(true);
         }}
-        className={`grid size-11 place-items-center rounded-full bg-white/95 text-ink shadow-sm ring-1 ring-line transition hover:scale-110 hover:text-brand active:scale-95 ${className}`}
+        className={`grid ${small ? "size-8" : "size-11"} place-items-center rounded-full bg-white/95 text-ink shadow-sm ring-1 ring-line transition hover:scale-110 hover:text-brand active:scale-95 ${className}`}
       >
-        <Heart className={`size-5 transition-transform ${saved ? "scale-110 fill-brand text-brand" : ""}`} aria-hidden="true" />
+        <Heart className={`${small ? "size-4" : "size-5"} transition-transform ${saved ? "scale-110 fill-brand text-brand" : ""}`} aria-hidden="true" />
       </button>
       {invite && <SaveInvite item={item} onClose={() => setInvite(false)} />}
     </>

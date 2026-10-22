@@ -42,7 +42,7 @@ export function CardPhotos({
   }
 
   const arrow =
-    "absolute top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink shadow-sm transition hover:scale-105 hover:bg-white pointer-coarse:size-8";
+    "absolute top-1/2 z-10 grid size-8 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink shadow-sm transition hover:scale-105 hover:bg-white";
 
   return (
     <>
@@ -65,16 +65,16 @@ export function CardPhotos({
       {urls.length > 1 && (
         <>
           <button type="button" onClick={() => go(-1)} aria-label="Foto anterior" className={`${arrow} left-2`}>
-            <ChevronLeft className="size-5" aria-hidden="true" />
+            <ChevronLeft className="size-4" aria-hidden="true" />
           </button>
           <button type="button" onClick={() => go(1)} aria-label="Próxima foto" className={`${arrow} right-2`}>
-            <ChevronRight className="size-5" aria-hidden="true" />
+            <ChevronRight className="size-4" aria-hidden="true" />
           </button>
           <div className="pointer-events-none absolute inset-x-0 bottom-2 z-10 flex justify-center gap-1" aria-hidden="true">
             {urls.map((url, i) => (
               <span
                 key={url}
-                className={`h-1.5 rounded-full bg-white shadow transition-all duration-300 ${i === index ? "w-4" : "w-1.5 opacity-60"}`}
+                className={`h-1.5 rounded-full bg-white shadow-sm transition-all duration-300 ${i === index ? "w-4" : "w-1.5 opacity-60"}`}
               />
             ))}
           </div>
