@@ -1,0 +1,41 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+Portal Carbud: marketplace público (carbud.com.br) com o estoque de todas as revendas que usam o Carbud CRM. Interface e textos em pt-BR; código e identificadores em inglês. Comentário explica o porquê, não o quê.
+
+## Comandos
+
+```bash
+npm run dev        # porta 3200; precisa do painel de pé (PANEL_URL no .env.local)
+npm run build      # falha cedo se PANEL_URL não estiver definida (next.config.ts)
+npm run check      # typecheck + testes
+npm test           # node:test, sem framework: src/lib/*.test.ts
+node --test --experimental-strip-types src/lib/format.test.ts   # um arquivo
+```
+
+Desenvolvimento local: suba o painel do repositório `../carbud` (`npm run dev`, porta 3000, D1 local com a demo) e use `PANEL_URL=http://localhost:3000`.
+
+Windows: derrube o `npm run dev` antes de `npm run build` e apague `.next` entre os dois; dev e build no mesmo `.next` geram rotas 404/500 falsas.
+
+## Arquitetura
+
+- **Sem banco.** O D1 é binding do Cloudflare e só existe dentro do painel (Webflow Cloud, repo `carbud`). Tudo vem de HTTP via `src/lib/panel.ts`:
+  - `GET /api/public/portal/vehicles` — busca cross-revenda; mesma query string do site da revenda (`q`, `marca`, `modelo`, `cambio`, `combustivel`, `carroceria`, `precoMin/Max` em reais, `anoMin/Max`, `kmMax`, `ordem`, `pagina`) mais `loja`, `cidade`, `uf`. Página fixa de 12.
+  - `GET /api/public/portal/dealers` — lojas no ar com contagem de anúncios.
+  - `GET /api/public/site/[slug]` e `/api/public/site/[slug]/vehicles/[vehicleSlug]` — dados da loja (`available` decide se aparece) e ficha. Rotas do app dos sites, reaproveitadas.
+  - `POST /api/leads` do painel, sempre pelo proxy `src/app/api/leads/route.ts`.
+  As rotas `portal/*` vivem no repo `carbud` (`src/app/api/public/portal/`); mudar o contrato exige mudar os dois lados. Tipos espelhados à mão em `src/lib/types.ts`/`catalog.ts` (este repo não enxerga `@carbud/site-kit`).
+- **Header `x-sites-key`**: `SITES_API_KEY` precisa ser igual à do painel quando ele define uma; sem ela as rotas respondem 401.
+- **Fotos**: o painel devolve `/<mount>/api/media/...`; `localMedia()` reescreve para `/media/...` e o `rewrites()` do `next.config.ts` encaminha ao painel (R2 é privado).
+- **Páginas `force-dynamic`** de propósito: o build não pode depender do painel no ar. O cache fica no `fetch` (`next.revalidate` 60s).
+- **Skeleton só em `comprar/loading.tsx`**: na raiz, o Suspense manda 200 antes do `notFound()` da ficha/loja.
+- **URL é o estado da busca**: filtros são `<form method=get>`; `FilterPanel`/`AutoSubmitSelect` são as únicas peças client da listagem.
+- **Lead** (`components/contact.tsx` → `/api/leads`): valida, salva no painel e só então devolve `whatsappUrl`, montado no servidor com o WhatsApp cadastrado da loja. O WhatsApp nunca abre antes do lead salvo; consentimento LGPD obrigatório e desmarcado. Atribuição vai em `utm.source = "carbud-portal"`.
+- **Favoritos** só em `localStorage` (`components/favorites.tsx`); não há conta de comprador. "Entrar / Cadastrar" e "Vender" levam ao painel (`PANEL_URL`), área do lojista.
+
+## Design
+
+Fonte da verdade: Figma "Benchmark UX Automotivo — CarGurus × Webmotors × OLX | Wireframes" (páginas 01–05: mobile, contato e estados, desktop, sistema de design, handoff). Tokens em `src/app/globals.css` (`@theme`): `brand #C6000F`, Sora (títulos, `font-display`) + Inter. Card: mídia em caixa própria 16:9 com overflow escondido, texto empilhado abaixo, nada por cima da foto além de selos. Mobile-first; validar em 360/390/768/1024/1440.
+
+Fora de propósito (não inventar dado): selo "Abaixo da FIPE", vistoria, chat em tempo real, avaliações. Só entram quando o painel tiver o dado.

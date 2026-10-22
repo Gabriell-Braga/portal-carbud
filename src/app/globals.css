@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Tokens da página "04 · Sistema de design" do Figma (Carbud Portal). */
+@theme {
+  --color-brand: #c6000f;
+  --color-brand-hover: #a5000d;
+  --color-brand-soft: #fff1f2;
+  --color-ink: #131820;
+  --color-muted: #657181;
+  --color-surface: #ffffff;
+  --color-subtle: #f6f7f9;
+  --color-raised: #fafafb;
+  --color-line: #e3e7ed;
+  --color-success: #177b55;
+  --color-error: #b3261e;
+  --color-whatsapp: #128c58;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* o preflight do v4 tirou a mãozinha dos botões */
+button:not(:disabled),
+[role="button"]:not(:disabled),
+summary,
+label:has(input[type="checkbox"]:not(:disabled)) {
+  cursor: pointer;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+/* barra de abas e barra de contato fixas não podem cobrir o fim da página */
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
