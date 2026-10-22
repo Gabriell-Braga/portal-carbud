@@ -74,7 +74,7 @@ export async function searchVehicles(query: Query = {}): Promise<SearchResult> {
   const qs = toSearchParams(query).toString();
   const data = await get<SearchResult>(`/api/public/portal/vehicles${qs ? `?${qs}` : ""}`);
   if (!data) throw new Error("Busca do portal indisponível no painel.");
-  return { ...data, vehicles: data.vehicles.map(withLocalMedia) };
+  return { ...data, vehicles: data.vehicles.map(withLocalMedia), highlights: (data.highlights ?? []).map(withLocalMedia) };
 }
 
 /** Loja pela vitrine pública dela; null quando não existe ou está fora do ar. */

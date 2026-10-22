@@ -27,6 +27,13 @@ export async function hasSession(): Promise<boolean> {
   return !!(await sessionToken());
 }
 
+/** Grava a sessão que o painel devolveu: token no httpOnly, aviso legível ao lado. */
+export function saveSession(jar: Awaited<ReturnType<typeof cookies>>, token: string, expiresAt: string) {
+  const options = { path: "/", sameSite: "lax" as const, secure: process.env.NODE_ENV === "production", expires: new Date(expiresAt) };
+  jar.set(SESSION_COOKIE, token, { ...options, httpOnly: true });
+  jar.set(FLAG_COOKIE, "1", options);
+}
+
 /** Chamada ao painel em nome do comprador. Sempre sem cache: é dado de uma pessoa. */
 export async function panelAccount(path: string, init: RequestInit = {}, token?: string | null): Promise<Response> {
   const bearer = token === undefined ? await sessionToken() : token;

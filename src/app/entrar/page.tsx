@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { FinishLogin } from "~/components/login-flow";
 import { LoginCard } from "~/components/login-modal";
 import { hasSession, safeReturn } from "~/lib/account";
 
 export const metadata: Metadata = { title: "Entrar", robots: { index: false } };
 
-type Props = { searchParams: Promise<{ volta?: string }> };
+type Props = { searchParams: Promise<{ volta?: string; sincronizar?: string }> };
 
 /** Link direto para /entrar: o mesmo cartão do modal, sobre o fundo cinza. */
 export default async function LoginPage({ searchParams }: Props) {
-  const returnTo = safeReturn((await searchParams).volta);
-  if (await hasSession()) redirect(returnTo);
+  const query = await searchParams;
+  const returnTo = safeReturn(query.volta);
+  if (await hasSession()) {
+    // volta do Google: junta os favoritos no navegador antes de seguir
+    if (query.sincronizar) return <FinishLogin returnTo={returnTo} />;
+    redirect(returnTo);
+  }
 
   return (
     // fundo cinza até o rodapé: o -mb anula o mt do footer

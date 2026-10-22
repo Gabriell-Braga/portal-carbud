@@ -66,6 +66,8 @@ export type Facets = {
 
 export type SearchResult = {
   vehicles: PortalVehicle[];
+  /** Até 3 destaques em rodízio igual entre as lojas; painel antigo não manda. */
+  highlights?: PortalVehicle[];
   facets: Facets;
   total: number;
   page: number;

@@ -135,10 +135,18 @@ export default async function BuyPage(props: Props) {
             </div>
           )}
 
+          {result.page === 1 && !!result.highlights?.length && (
+            <>
+              <h2 className="mt-6 mb-3 text-sm font-semibold">Destaques</h2>
+              <VehicleGrid vehicles={result.highlights} />
+            </>
+          )}
+
           <h2 className="mt-6 mb-3 text-sm font-semibold">Carros usados e seminovos</h2>
           {result.vehicles.length ? (
             <>
-              <VehicleGrid vehicles={result.vehicles} />
+              {/* destaque só vale na faixa de cima (3, em rodízio); na lista é anúncio como outro qualquer */}
+              <VehicleGrid vehicles={result.vehicles.map((v) => ({ ...v, featured: false }))} />
               <Pagination base={base} params={new URLSearchParams(qs)} page={result.page} pageSize={result.pageSize} total={result.total} />
             </>
           ) : (

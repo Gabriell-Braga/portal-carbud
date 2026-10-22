@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { FLAG_COOKIE, SESSION_COOKIE, panelAccount } from "~/lib/account";
+import { FLAG_COOKIE, SESSION_COOKIE, panelAccount, saveSession } from "~/lib/account";
 
 export const dynamic = "force-dynamic";
 
@@ -39,9 +39,7 @@ async function handle(request: Request, { params }: Props) {
 
   if (path === "auth/verify" && payload.ok) {
     const { token, expiresAt, ...rest } = payload.data as { token: string; expiresAt: string };
-    const options = { path: "/", sameSite: "lax" as const, secure: process.env.NODE_ENV === "production", expires: new Date(expiresAt) };
-    jar.set(SESSION_COOKIE, token, { ...options, httpOnly: true });
-    jar.set(FLAG_COOKIE, "1", options);
+    saveSession(jar, token, expiresAt);
     return Response.json({ ok: true, data: rest });
   }
 
