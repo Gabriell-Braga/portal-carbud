@@ -49,11 +49,17 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
       <div className="flex flex-1 flex-col p-4">
         {badges && (
           <div className="mb-3 flex flex-wrap gap-1.5">
-            {vehicle.featured && <span className={`${badge} bg-brand text-white`}>Destaque</span>}
-            {vehicle.belowFipe && <span className={`${badge} bg-success text-white`}>Abaixo da FIPE</span>}
-            {vehicle.inspected && <span className={`${badge} bg-subtle text-ink`}>Vistoriado</span>}
-            {vehicle.has360 && <span className={`${badge} bg-subtle text-ink`}>360°</span>}
-            {vehicle.status === "reserved" && <span className={`${badge} bg-ink text-white`}>Reservado</span>}
+            {/* reservado não está à venda: os outros selos só distrairiam */}
+            {vehicle.status === "reserved" ? (
+              <span className={`${badge} bg-ink text-white`}>Reservado</span>
+            ) : (
+              <>
+                {vehicle.featured && <span className={`${badge} bg-brand text-white`}>Destaque</span>}
+                {vehicle.belowFipe && <span className={`${badge} bg-success text-white`}>Abaixo da FIPE</span>}
+                {vehicle.inspected && <span className={`${badge} bg-subtle text-ink`}>Vistoriado</span>}
+                {vehicle.has360 && <span className={`${badge} bg-subtle text-ink`}>360°</span>}
+              </>
+            )}
           </div>
         )}
         <h3 className="font-display text-base font-bold uppercase leading-tight">
