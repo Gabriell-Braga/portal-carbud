@@ -1,5 +1,6 @@
-import { Heart, Home, MapPin, Menu, Search, Store } from "lucide-react";
+import { CircleUser, Heart, Home, MapPin, Menu, Search } from "lucide-react";
 import Link from "next/link";
+import { hasSession } from "~/lib/account";
 
 /** Área do lojista mora no painel Carbud (cadastro de loja e login). */
 function panelHref(path = ""): string {
@@ -23,7 +24,11 @@ export function Logo({ className = "h-8" }: { className?: string }) {
   );
 }
 
-export function Header() {
+export async function Header() {
+  // só a presença do cookie: validar a sessão no painel a cada página custaria uma ida por request
+  const logged = await hasSession();
+  const account = logged ? { href: "/conta", label: "Minha conta" } : { href: "/entrar", label: "Entrar / Cadastrar" };
+
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1240px] items-center gap-4 px-4 lg:h-[72px] lg:px-6">
@@ -38,9 +43,12 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Link href={panelHref("/login")} className="block rounded-lg px-3 py-3 text-sm font-semibold text-brand hover:bg-subtle">
-              Entrar / Cadastrar
+            <Link href={account.href} className="block rounded-lg px-3 py-3 text-sm font-semibold text-brand hover:bg-subtle">
+              {account.label}
             </Link>
+            <a href={panelHref("/login")} className="block rounded-lg px-3 py-3 text-sm text-muted hover:bg-subtle">
+              Área do lojista
+            </a>
           </nav>
         </details>
 
@@ -48,7 +56,7 @@ export function Header() {
 
         <nav className="ml-auto hidden items-center gap-8 lg:flex" aria-label="Principal">
           {NAV.map((item) => (
-            <Link key={item.label} href={item.href} className="text-sm font-medium text-ink hover:text-brand">
+            <Link key={item.label} href={item.href} className="relative py-1 text-sm font-medium text-ink after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-brand after:transition-transform after:duration-300 hover:text-brand hover:after:scale-x-100">
               {item.label}
             </Link>
           ))}
@@ -56,21 +64,22 @@ export function Header() {
 
         <form action="/comprar" className="hidden w-56 items-center gap-2 rounded-lg border border-line px-3 lg:flex">
           <MapPin className="size-4 shrink-0 text-muted" aria-hidden="true" />
-          <label htmlFor="header-cidade" className="sr-only">Cidade</label>
+          <label htmlFor="header-cidade" className="sr-only">Cidade ou CEP</label>
           <input
             id="header-cidade"
             name="cidade"
-            placeholder="Sua cidade"
+            placeholder="Cidade ou CEP"
             className="h-10 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted"
           />
         </form>
 
-        <a
-          href={panelHref("/login")}
-          className="hidden min-h-11 items-center rounded-lg bg-brand px-5 text-sm font-semibold text-white hover:bg-brand-hover lg:inline-flex"
+        <Link
+          href={account.href}
+          className="hidden min-h-11 items-center gap-2 rounded-lg bg-brand px-5 text-sm font-semibold text-white hover:bg-brand-hover lg:inline-flex"
         >
-          Entrar / Cadastrar
-        </a>
+          {logged && <CircleUser className="size-4" aria-hidden="true" />}
+          {account.label}
+        </Link>
 
         <Link href="/favoritos" aria-label="Favoritos" className="ml-auto grid size-11 place-items-center lg:hidden">
           <Heart className="size-6" aria-hidden="true" />
@@ -90,6 +99,7 @@ export function Footer() {
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-muted" aria-label="Rodapé">
           <Link href="/lojas" className="hover:text-ink">Lojas</Link>
           <a href={panelHref()} className="hover:text-ink">Anuncie sua loja</a>
+          <a href={panelHref("/login")} className="hover:text-ink">Área do lojista</a>
           <Link href="/termos" className="hover:text-ink">Termos</Link>
           <Link href="/privacidade" className="hover:text-ink">Privacidade</Link>
         </nav>
@@ -102,7 +112,7 @@ const TABS = [
   { href: "/", label: "Início", icon: Home },
   { href: "/comprar", label: "Busca", icon: Search },
   { href: "/favoritos", label: "Favoritos", icon: Heart },
-  { href: "/lojas", label: "Lojas", icon: Store },
+  { href: "/conta", label: "Conta", icon: CircleUser },
 ];
 
 /** Barra de abas do mobile (Figma 01 / Mobile). Some na ficha, que tem a barra de contato. */

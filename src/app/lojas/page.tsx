@@ -26,7 +26,7 @@ export default async function DealersPage() {
       <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {dealers.map((dealer) => (
           <li key={dealer.slug}>
-            <Link href={`/loja/${dealer.slug}`} className="flex h-full items-center gap-4 rounded-2xl border border-line p-5 hover:shadow-md">
+            <Link href={`/loja/${dealer.slug}`} className="group flex h-full items-center gap-4 rounded-2xl border border-line p-5 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
               <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl bg-subtle">
                 {dealer.logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -42,7 +42,7 @@ export default async function DealersPage() {
                   {dealer.vehicles} {dealer.vehicles === 1 ? "veículo" : "veículos"}
                 </p>
               </div>
-              <ArrowRight className="size-4 shrink-0 text-muted" aria-hidden="true" />
+              <ArrowRight className="size-4 shrink-0 text-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-brand" aria-hidden="true" />
             </Link>
           </li>
         ))}

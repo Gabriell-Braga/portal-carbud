@@ -6,6 +6,7 @@ import { cache } from "react";
 import { ContactActions } from "~/components/contact";
 import { FavoriteButton } from "~/components/favorites";
 import { Gallery } from "~/components/gallery";
+import { ShareButton } from "~/components/share";
 import { VehicleGrid } from "~/components/results";
 import { km, place, price } from "~/lib/format";
 import { fetchDealer, fetchVehicle } from "~/lib/panel";
@@ -52,6 +53,7 @@ export default async function VehiclePage({ params }: Props) {
   const { vehicle, dealer, dealerSite, related } = data;
   const label = price(vehicle.priceCents, vehicle.priceOnRequest);
   const where = place(dealer.city, dealer.state);
+  const address = dealerSite.site.contact.address.full ?? where;
   const summary = [vehicle.yearModel, km(vehicle.mileageKm), vehicle.transmissionLabel, vehicle.fuelLabel, where]
     .filter(Boolean)
     .join(" • ");
@@ -123,6 +125,7 @@ export default async function VehiclePage({ params }: Props) {
         <div className="min-w-0">
           <h1 className="font-display text-2xl font-bold lg:text-3xl">{vehicle.title}</h1>
           <p className="mt-1 text-sm text-muted">{summary}</p>
+          <ShareButton title={vehicle.title} />
         </div>
         <FavoriteButton
           className="shrink-0"
@@ -165,6 +168,23 @@ export default async function VehiclePage({ params }: Props) {
                   ))}
                 </ul>
               )}
+            </section>
+          )}
+
+          {address && (
+            <section className="rounded-2xl border border-line p-5">
+              <h2 className="font-display text-lg font-bold">Localização</h2>
+              {/* embed sem chave de API; carrega só quando chega perto da tela */}
+              <iframe
+                title={`Mapa: ${dealer.name}`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="mt-4 aspect-[16/7] w-full rounded-xl border-0 bg-subtle"
+              />
+              <p className="mt-3 flex items-start gap-1 text-sm text-muted">
+                <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> {address}
+              </p>
             </section>
           )}
         </div>

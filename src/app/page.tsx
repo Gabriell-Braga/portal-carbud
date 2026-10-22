@@ -1,6 +1,7 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { CarArt } from "~/components/car-art";
+import { PriceRange } from "~/components/price-range";
 import { vehicleHref } from "~/components/vehicle-card";
 import { km, price } from "~/lib/format";
 import { searchVehicles } from "~/lib/panel";
@@ -60,8 +61,8 @@ export default async function HomePage() {
         <form action="/comprar" className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
           <label className="sr-only" htmlFor="busca-q">Marca, modelo ou palavra-chave</label>
           <input id="busca-q" name="q" placeholder="Marca, modelo ou palavra-chave" className={field} />
-          <label className="sr-only" htmlFor="busca-cidade">Cidade</label>
-          <input id="busca-cidade" name="cidade" placeholder="Cidade" list="cidades" className={field} />
+          <label className="sr-only" htmlFor="busca-cidade">Cidade ou CEP</label>
+          <input id="busca-cidade" name="cidade" placeholder="Cidade ou CEP" list="cidades" className={field} />
           <datalist id="cidades">
             {facets.cities.map((city) => (
               <option key={city} value={city.split(" - ")[0]}>{city}</option>
@@ -104,13 +105,13 @@ export default async function HomePage() {
             <ul className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
               {showcase.map((vehicle, index) => (
                 <li key={vehicle.id} className="w-[78%] shrink-0 snap-start lg:w-auto">
-                  <Link href={vehicleHref(vehicle)} className="block overflow-hidden rounded-xl border border-line hover:shadow-md">
+                  <Link href={vehicleHref(vehicle)} className="group block overflow-hidden rounded-xl border border-line transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
                     <div className="aspect-video overflow-hidden bg-subtle">
                       {vehicle.coverUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={vehicle.coverUrl} alt={vehicle.title} className="h-full w-full object-cover" loading={index === 0 ? "eager" : "lazy"} />
+                        <img src={vehicle.coverUrl} alt={vehicle.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading={index === 0 ? "eager" : "lazy"} />
                       ) : (
-                        <CarArt seed={vehicle.id} />
+                        <CarArt seed={vehicle.id} className="transition-transform duration-500 group-hover:scale-105" />
                       )}
                     </div>
                     <div className="flex items-start justify-between gap-3 p-3">
@@ -133,12 +134,12 @@ export default async function HomePage() {
         <ul className="grid grid-cols-1 gap-3 lg:grid-cols-3 lg:gap-4">
           {JOURNEYS.map((item) => (
             <li key={item.title}>
-              <Link href={item.href} className="flex items-start justify-between gap-3 rounded-xl border border-line border-l-4 border-l-brand p-4 hover:shadow-md lg:border-l lg:border-l-line lg:p-5">
+              <Link href={item.href} className="group flex items-start justify-between gap-3 rounded-xl border border-line border-l-4 border-l-brand p-4 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg lg:border-l lg:border-l-line lg:p-5">
                 <span>
                   <span className="block font-display font-semibold">{item.title}</span>
                   <span className="mt-1 block text-xs text-muted">{item.text}</span>
                 </span>
-                <ArrowUpRight className="size-4 shrink-0 text-brand" aria-hidden="true" />
+                <ArrowUpRight className="size-4 shrink-0 text-brand transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
               </Link>
             </li>
           ))}
@@ -159,14 +160,11 @@ export default async function HomePage() {
         </ul>
         <form action="/comprar" className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
           <p className="col-span-2 text-xs font-semibold lg:col-span-4">Faixa de preço</p>
-          <label className="sr-only" htmlFor="orc-min">Valor mínimo</label>
-          <input id="orc-min" name="precoMin" inputMode="numeric" placeholder="Valor mínimo" className={field} />
-          <label className="sr-only" htmlFor="orc-max">Valor máximo</label>
-          <input id="orc-max" name="precoMax" inputMode="numeric" placeholder="Valor máximo" className={field} />
-          <span className="hidden lg:block" />
-          <button className="col-span-2 h-12 rounded-lg bg-brand px-6 text-sm font-semibold text-white hover:bg-brand-hover lg:col-span-1">
-            Ver carros no orçamento
-          </button>
+          <PriceRange min={facets.priceRange.min / 100} max={facets.priceRange.max / 100} className={field}>
+            <button className="col-span-2 h-12 rounded-lg bg-brand px-6 text-sm font-semibold text-white hover:bg-brand-hover lg:col-span-1">
+              Ver carros no orçamento
+            </button>
+          </PriceRange>
         </form>
       </section>
 
@@ -177,12 +175,12 @@ export default async function HomePage() {
             const count = category.count(facets.counts) ?? 0;
             return (
               <li key={category.label}>
-                <Link href={`/comprar?${category.param}`} className="block overflow-hidden rounded-xl border border-line hover:shadow-md">
+                <Link href={`/comprar?${category.param}`} className="group block overflow-hidden rounded-xl border border-line transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
                   <div className="aspect-[16/10] overflow-hidden">
-                    <CarArt seed={category.label} />
+                    <CarArt seed={category.label} className="transition-transform duration-500 group-hover:scale-105" />
                   </div>
                   <div className="p-3">
-                    <p className="text-sm font-semibold">{category.label}</p>
+                    <p className="text-sm font-semibold transition-colors group-hover:text-brand">{category.label}</p>
                     <p className="text-xs text-muted">
                       {count} {count === 1 ? "veículo" : "veículos"}
                     </p>
@@ -192,6 +190,14 @@ export default async function HomePage() {
             );
           })}
         </ul>
+      </section>
+
+      <section className="mt-10 flex items-start gap-3 rounded-2xl bg-subtle p-4 lg:items-center lg:p-6">
+        <ShieldCheck className="size-6 shrink-0 text-success" aria-hidden="true" />
+        <div>
+          <h2 className="font-display font-semibold">Uma compra mais segura</h2>
+          <p className="text-sm text-muted">Informações completas do anúncio e contato direto com lojas cadastradas no Carbud.</p>
+        </div>
       </section>
     </div>
   );

@@ -42,3 +42,78 @@ body {
 summary::-webkit-details-marker {
   display: none;
 }
+
+/*
+ * Hover suave no portal inteiro sem repetir `transition` em cada classe.
+ * Fica no layer base: um `transition-*` explícito no componente ainda ganha.
+ */
+@layer base {
+  a,
+  button,
+  summary,
+  input,
+  select,
+  textarea {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* entrada dos blocos e do modal de contato */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+dialog[open] {
+  animation: rise 250ms ease-out;
+}
+
+dialog[open]::backdrop {
+  animation: fade 250ms ease-out;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* trilho duplo da faixa de preço: só as bolinhas recebem o ponteiro */
+.range-thumb {
+  pointer-events: none;
+  appearance: none;
+  background: transparent;
+}
+.range-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--color-brand);
+  cursor: grab;
+}
+.range-thumb::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--color-brand);
+  cursor: grab;
+}

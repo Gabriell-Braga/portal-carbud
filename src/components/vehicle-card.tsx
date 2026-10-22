@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { km, place, price } from "~/lib/format";
 import type { PortalVehicle } from "~/lib/types";
-import { CarArt } from "./car-art";
+import { CardPhotos } from "./card-photos";
 import { FavoriteButton } from "./favorites";
 
 export function vehicleHref(vehicle: PortalVehicle): string {
@@ -19,20 +19,17 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
   const where = place(vehicle.dealer.city, vehicle.dealer.state);
 
   return (
-    <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:shadow-md">
+    <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white transition duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:hover:translate-y-0">
       <div className="relative aspect-video overflow-hidden bg-subtle">
-        {vehicle.coverUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={vehicle.coverUrl}
-            alt={vehicle.title}
-            className="h-full w-full object-cover"
-            loading={priority ? "eager" : "lazy"}
-          />
-        ) : (
-          <CarArt seed={vehicle.id} />
-        )}
-        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+        <CardPhotos
+          photos={vehicle.photos}
+          cover={vehicle.coverUrl}
+          title={vehicle.title}
+          seed={vehicle.id}
+          href={href}
+          priority={priority}
+        />
+        <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
           <span>
             {vehicle.featured && (
               <span className="rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white">Destaque</span>
@@ -42,7 +39,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
             )}
           </span>
           <FavoriteButton
-            className="relative z-10"
+            className="pointer-events-auto relative z-10"
             item={{
               id: vehicle.id,
               href,
@@ -58,7 +55,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
       <div className="flex flex-1 flex-col gap-1 px-4 pt-4 pb-5">
         <h3 className="font-display text-sm font-bold uppercase tracking-wide">
           {/* o link cobre o card inteiro; o coração fica acima dele (z-10) */}
-          <Link href={href} className="after:absolute after:inset-0">
+          <Link href={href} className="transition-colors after:absolute after:inset-0 group-hover:text-brand">
             {vehicle.brand} {vehicle.model}
           </Link>
         </h3>
@@ -75,7 +72,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
           <p className="mt-0.5 truncate text-xs text-muted">{vehicle.dealer.name}</p>
         </div>
 
-        <span className="mt-3 flex min-h-11 items-center justify-center rounded-lg border border-line text-sm font-semibold transition group-hover:border-brand group-hover:bg-brand group-hover:text-white">
+        <span className="mt-3 flex min-h-11 items-center justify-center rounded-lg border border-line text-sm font-semibold transition duration-300 group-hover:border-brand group-hover:bg-brand group-hover:text-white">
           Ver oferta
         </span>
       </div>

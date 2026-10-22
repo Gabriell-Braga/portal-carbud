@@ -25,14 +25,18 @@ Windows: derrube o `npm run dev` antes de `npm run build` e apague `.next` entre
   - `GET /api/public/portal/dealers` — lojas no ar com contagem de anúncios.
   - `GET /api/public/site/[slug]` e `/api/public/site/[slug]/vehicles/[vehicleSlug]` — dados da loja (`available` decide se aparece) e ficha. Rotas do app dos sites, reaproveitadas.
   - `POST /api/leads` do painel, sempre pelo proxy `src/app/api/leads/route.ts`.
+  - `portal/auth/*` e `portal/me*` — conta de comprador (Bearer com o token da sessão).
   As rotas `portal/*` vivem no repo `carbud` (`src/app/api/public/portal/`); mudar o contrato exige mudar os dois lados. Tipos espelhados à mão em `src/lib/types.ts`/`catalog.ts` (este repo não enxerga `@carbud/site-kit`).
 - **Header `x-sites-key`**: `SITES_API_KEY` precisa ser igual à do painel quando ele define uma; sem ela as rotas respondem 401.
 - **Fotos**: o painel devolve `/<mount>/api/media/...`; `localMedia()` reescreve para `/media/...` e o `rewrites()` do `next.config.ts` encaminha ao painel (R2 é privado).
 - **Páginas `force-dynamic`** de propósito: o build não pode depender do painel no ar. O cache fica no `fetch` (`next.revalidate` 60s).
-- **Skeleton só em `comprar/loading.tsx`**: na raiz, o Suspense manda 200 antes do `notFound()` da ficha/loja.
+- **Skeleton só em `comprar/` e `lojas/` (`loading.tsx`, peças em `components/skeletons.tsx`)**: na raiz, o Suspense manda 200 antes do `notFound()` da ficha/loja.
+- **Fotos no card**: `portal/vehicles` devolve até 6 fotos por carro (uma query em lote no painel); `CardPhotos` desliza entre elas.
 - **URL é o estado da busca**: filtros são `<form method=get>`; `FilterPanel`/`AutoSubmitSelect` são as únicas peças client da listagem.
 - **Lead** (`components/contact.tsx` → `/api/leads`): valida, salva no painel e só então devolve `whatsappUrl`, montado no servidor com o WhatsApp cadastrado da loja. O WhatsApp nunca abre antes do lead salvo; consentimento LGPD obrigatório e desmarcado. Atribuição vai em `utm.source = "carbud-portal"`.
-- **Favoritos** só em `localStorage` (`components/favorites.tsx`); não há conta de comprador. "Entrar / Cadastrar" e "Vender" levam ao painel (`PANEL_URL`), área do lojista.
+- **Conta de comprador** (`/entrar`, `/conta`): código de 6 dígitos por e-mail, sem senha; sai pelo mesmo provedor do painel (`sendEmail`: Amazon SES ou Resend, o que estiver configurado em Super Admin → Configurações → E-mail). Conta e sessão vivem no painel (`portal/auth/*`, `portal/me*`); o portal guarda o token em cookie httpOnly `carbud_sessao` e fala com o painel só pelo proxy `src/app/api/conta/[...path]/route.ts`. `carbud_conta=1` é um cookie legível, sem segredo, que só avisa o navegador que há sessão. Sem provedor de e-mail e fora de produção, o painel devolve `devCode` e a tela mostra o código.
+- **Favoritos**: `localStorage` é o que a tela lê; com sessão, cada mudança vai também para a conta e `syncFavorites` junta as duas listas no login e em `/favoritos`. Sair limpa a lista local. "Vender" e "Área do lojista" levam ao painel (`PANEL_URL`).
+- **CEP**: "Cidade ou CEP" manda o CEP em `cidade`; `/comprar` troca pela cidade via ViaCEP (`lib/cep.ts`) e redireciona.
 
 ## Design
 

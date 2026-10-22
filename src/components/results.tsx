@@ -57,7 +57,14 @@ export function Pagination({
   total: number;
 }) {
   const pages = Math.ceil(total / pageSize);
-  if (pages <= 1) return null;
+  const first = (page - 1) * pageSize + 1;
+  const last = Math.min(page * pageSize, total);
+  const range = (
+    <p className="text-xs text-muted">
+      Exibindo {first}–{last} de {total.toLocaleString("pt-BR")} {total === 1 ? "resultado" : "resultados"}
+    </p>
+  );
+  if (pages <= 1) return <div className="mt-8">{range}</div>;
 
   // janela de até 5 páginas em volta da atual
   const start = Math.max(1, Math.min(page - 2, pages - 4));
@@ -66,24 +73,27 @@ export function Pagination({
   const item = "grid size-11 place-items-center rounded-full text-sm font-semibold";
 
   return (
-    <nav aria-label="Paginação" className="mt-8 flex items-center justify-center gap-2">
-      {page > 1 && (
-        <Link href={href(page - 1)} aria-label="Página anterior" className={`${item} border border-line hover:border-ink`}>
-          <ChevronLeft className="size-4" aria-hidden="true" />
-        </Link>
-      )}
-      {numbers.map((n) =>
-        n === page ? (
-          <span key={n} aria-current="page" className={`${item} bg-brand text-white`}>{n}</span>
-        ) : (
-          <Link key={n} href={href(n)} className={`${item} border border-line hover:border-ink`}>{n}</Link>
-        ),
-      )}
-      {page < pages && (
-        <Link href={href(page + 1)} aria-label="Próxima página" className={`${item} border border-line hover:border-ink`}>
-          <ChevronRight className="size-4" aria-hidden="true" />
-        </Link>
-      )}
-    </nav>
+    <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+      {range}
+      <nav aria-label="Paginação" className="flex items-center justify-center gap-2">
+        {page > 1 && (
+          <Link href={href(page - 1)} aria-label="Página anterior" className={`${item} border border-line hover:border-brand hover:text-brand`}>
+            <ChevronLeft className="size-4" aria-hidden="true" />
+          </Link>
+        )}
+        {numbers.map((n) =>
+          n === page ? (
+            <span key={n} aria-current="page" className={`${item} bg-brand text-white`}>{n}</span>
+          ) : (
+            <Link key={n} href={href(n)} className={`${item} border border-line hover:border-brand hover:text-brand`}>{n}</Link>
+          ),
+        )}
+        {page < pages && (
+          <Link href={href(page + 1)} aria-label="Próxima página" className={`${item} border border-line hover:border-brand hover:text-brand`}>
+            <ChevronRight className="size-4" aria-hidden="true" />
+          </Link>
+        )}
+      </nav>
+    </div>
   );
 }

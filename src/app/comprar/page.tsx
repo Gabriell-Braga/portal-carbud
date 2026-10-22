@@ -1,10 +1,12 @@
 import { X } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AutoSubmitSelect, FilterPanel } from "~/components/filter-panel";
 import { FiltersForm } from "~/components/filters-form";
 import { EmptyResults, Pagination, VehicleGrid, withParam } from "~/components/results";
 import { FILTER_KEYS, SORTS, filterLabel } from "~/lib/catalog";
+import { cityFromCep, cepDigits } from "~/lib/cep";
 import { searchVehicles, toSearchParams, type Query } from "~/lib/panel";
 
 type Props = { searchParams: Promise<Query> };
@@ -26,6 +28,18 @@ export default async function BuyPage({ searchParams }: Props) {
   const query = await searchParams;
   const params = toSearchParams(query);
   const values = Object.fromEntries(params.entries());
+
+  // "Cidade ou CEP": CEP vira a cidade dele, e a URL passa a mostrar a cidade
+  const cep = cepDigits(values.cidade);
+  if (cep) {
+    const found = await cityFromCep(cep);
+    if (found) {
+      params.set("cidade", found.city);
+      if (found.state) params.set("uf", found.state);
+      redirect(`/comprar?${params}`);
+    }
+  }
+
   const result = await searchVehicles(query);
 
   const applied = FILTER_KEYS.filter((key) => values[key] && key !== "loja");
