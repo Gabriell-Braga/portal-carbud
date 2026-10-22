@@ -4,6 +4,7 @@ import { km, place, price } from "~/lib/format";
 import type { PortalVehicle } from "~/lib/types";
 import { CardPhotos } from "./card-photos";
 import { FavoriteButton } from "./favorites";
+import { CardLoading, LinkPending } from "./link-pending";
 
 export function vehicleHref(vehicle: PortalVehicle): string {
   return `/veiculo/${vehicle.dealer.slug}/${vehicle.slug}`;
@@ -21,7 +22,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
   const badge = "rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide";
 
   return (
-    <article className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white transition duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:hover:translate-y-0">
+    <article className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white transition duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:hover:translate-y-0 has-[[data-pending]]:pointer-events-none">
       <div className="relative aspect-[4/3] overflow-hidden bg-subtle">
         <CardPhotos
           photos={vehicle.photos}
@@ -59,6 +60,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
           {/* o link cobre o card inteiro; o coração e as setas ficam acima dele (z-10) */}
           <Link href={href} className="transition-colors after:absolute after:inset-0 after:rounded-2xl group-hover:text-brand">
             {vehicle.brand} {vehicle.model}
+            <LinkPending />
           </Link>
         </h3>
         {vehicle.version && <p className="mt-1 line-clamp-2 text-sm text-muted">{vehicle.version}</p>}
@@ -90,6 +92,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
           </span>
         </div>
       </div>
+      <CardLoading />
     </article>
   );
 }

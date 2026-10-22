@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import type { VehiclePhoto } from "~/lib/types";
 import { CarArt } from "./car-art";
+import { LinkPending } from "./link-pending";
 
 const zoom = "h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105";
 
@@ -66,6 +67,7 @@ export function CardPhotos({
           <Link key={url} href={href} tabIndex={-1} aria-hidden="true" className="h-full w-full shrink-0 snap-start overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={url} alt={i === 0 ? title : ""} className={zoom} loading={priority && i === 0 ? "eager" : "lazy"} draggable={false} />
+            <LinkPending />
           </Link>
         ))}
       </div>

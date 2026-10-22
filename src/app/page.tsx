@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CarArt } from "~/components/car-art";
 import { CardPhotos } from "~/components/card-photos";
 import { CityInput, Select } from "~/components/fields";
+import { CardLoading, LinkPending } from "~/components/link-pending";
 import { PriceRange } from "~/components/price-range";
 import { vehicleHref } from "~/components/vehicle-card";
 import { km, price } from "~/lib/format";
@@ -102,7 +103,7 @@ export default async function HomePage() {
             <ul className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
               {showcase.map((vehicle, index) => (
                 <li key={vehicle.id} className="w-[78%] shrink-0 snap-start lg:w-auto">
-                  <article className="group relative overflow-hidden rounded-xl border border-line transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+                  <article className="group relative overflow-hidden rounded-xl border border-line transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg has-[[data-pending]]:pointer-events-none">
                     <div className="relative aspect-video overflow-hidden bg-subtle">
                       <CardPhotos photos={vehicle.photos} cover={vehicle.coverUrl} title={vehicle.title} seed={vehicle.id} href={vehicleHref(vehicle)} priority={index === 0} />
                     </div>
@@ -112,12 +113,14 @@ export default async function HomePage() {
                           {/* o link cobre o card; o carrossel fica acima dele */}
                           <Link href={vehicleHref(vehicle)} className="after:absolute after:inset-0 group-hover:text-brand">
                             {vehicle.brand} {vehicle.model}
+                            <LinkPending />
                           </Link>
                         </p>
                         <p className="text-xs text-muted">{vehicle.yearModel} • {km(vehicle.mileageKm)}</p>
                       </div>
                       <p className="shrink-0 font-display text-sm font-bold">{price(vehicle.priceCents, vehicle.priceOnRequest)}</p>
                     </div>
+                    <CardLoading />
                   </article>
                 </li>
               ))}

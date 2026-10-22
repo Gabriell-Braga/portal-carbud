@@ -4,6 +4,7 @@ import { Check, Heart, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { CardPhotos } from "./card-photos";
+import { CardLoading, LinkPending } from "./link-pending";
 import { CarArt } from "./car-art";
 import { GridSkeleton } from "./skeletons";
 
@@ -256,7 +257,7 @@ export function FavoritesList({ logged, justSaved }: { logged: boolean; justSave
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
       <ul className="grid gap-4">
         {items.map((item) => (
-          <li key={item.id} className="group relative grid gap-4 rounded-2xl border border-line bg-white p-4 transition duration-300 ease-out hover:shadow-lg sm:grid-cols-[240px_minmax(0,1fr)]">
+          <li key={item.id} className="group relative grid gap-4 rounded-2xl border border-line bg-white p-4 transition duration-300 ease-out hover:shadow-lg has-[[data-pending]]:pointer-events-none sm:grid-cols-[240px_minmax(0,1fr)]">
             <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-subtle">
               <CardPhotos
                 photos={(item.photos ?? []).map((url) => ({ id: url, thumb: url, card: url, full: url }))}
@@ -280,8 +281,10 @@ export function FavoritesList({ logged, justSaved }: { logged: boolean; justSave
                 className="mt-4 flex min-h-11 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-white after:absolute after:inset-0 after:rounded-2xl hover:bg-brand-hover sm:mt-auto"
               >
                 Ver anúncio
+                <LinkPending />
               </Link>
             </div>
+            <CardLoading />
           </li>
         ))}
       </ul>
