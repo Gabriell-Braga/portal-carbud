@@ -30,14 +30,17 @@ export function CardPhotos({
 }) {
   const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
+  // alvo da rolagem em curso: dois cliques seguidos somam, em vez de ler o meio do caminho
+  const goal = useRef(0);
   const urls = photos.length ? photos.map((photo) => photo.card || photo.full) : cover ? [cover] : [];
 
   if (!urls.length) return <CarArt seed={seed} className="transition-transform duration-500 ease-out group-hover:scale-105" />;
 
-  function go(step: number) {
+  function show(target: number) {
     const el = track.current;
     if (!el) return;
-    const next = (index + step + urls.length) % urls.length;
+    const next = (target + urls.length) % urls.length;
+    goal.current = next;
     el.scrollTo({ left: next * el.clientWidth, behavior: "smooth" });
   }
 
@@ -52,6 +55,10 @@ export function CardPhotos({
           const el = event.currentTarget;
           setIndex(Math.round(el.scrollLeft / el.clientWidth));
         }}
+        onScrollEnd={(event) => {
+          const el = event.currentTarget;
+          goal.current = Math.round(el.scrollLeft / el.clientWidth);
+        }}
         className="relative z-[1] flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {urls.map((url, i) => (
@@ -64,18 +71,27 @@ export function CardPhotos({
 
       {urls.length > 1 && (
         <>
-          <button type="button" onClick={() => go(-1)} aria-label="Foto anterior" className={`${arrow} left-2`}>
+          <button type="button" onClick={() => show(goal.current - 1)} aria-label="Foto anterior" className={`${arrow} left-2`}>
             <ChevronLeft className="size-4" aria-hidden="true" />
           </button>
-          <button type="button" onClick={() => go(1)} aria-label="Próxima foto" className={`${arrow} right-2`}>
+          <button type="button" onClick={() => show(goal.current + 1)} aria-label="Próxima foto" className={`${arrow} right-2`}>
             <ChevronRight className="size-4" aria-hidden="true" />
           </button>
-          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-10 flex justify-center gap-1" aria-hidden="true">
+          {/* bolinha é botão: o padding dá área de toque sem aumentar o desenho */}
+          <div className="absolute inset-x-0 bottom-1 z-10 flex justify-center">
             {urls.map((url, i) => (
-              <span
+              <button
                 key={url}
-                className={`h-1.5 rounded-full bg-white shadow-sm transition-all duration-300 ${i === index ? "w-4" : "w-1.5 opacity-60"}`}
-              />
+                type="button"
+                onClick={() => show(i)}
+                aria-label={`Ver foto ${i + 1} de ${urls.length}`}
+                aria-current={i === index}
+                className="group/dot grid h-5 place-items-center px-0.5"
+              >
+                <span
+                  className={`block h-1.5 rounded-full bg-white shadow-sm transition-all duration-300 ${i === index ? "w-4" : "w-1.5 opacity-60 group-hover/dot:opacity-100"}`}
+                />
+              </button>
             ))}
           </div>
         </>

@@ -9,7 +9,7 @@ import { Gallery } from "~/components/gallery";
 import { ShareButton } from "~/components/share";
 import { VehicleGrid } from "~/components/results";
 import { km, place, price } from "~/lib/format";
-import { fetchDealer, fetchVehicle } from "~/lib/panel";
+import { fetchDealer, fetchVehicle, searchVehicles } from "~/lib/panel";
 import { siteUrl } from "~/lib/site";
 import type { Dealer } from "~/lib/types";
 
@@ -51,6 +51,10 @@ export default async function VehiclePage({ params }: Props) {
   if (!data) notFound();
 
   const { vehicle, dealer, dealerSite, related } = data;
+  // o `related` da rota da loja só traz a capa; a busca do portal traz as fotos do carrossel
+  const others =
+    (await searchVehicles({ loja: dealer.slug }).catch(() => null))?.vehicles.filter((item) => item.id !== vehicle.id).slice(0, 3) ??
+    related.slice(0, 3).map((item) => ({ ...item, dealer }));
   const label = price(vehicle.priceCents, vehicle.priceOnRequest);
   const where = place(dealer.city, dealer.state);
   const address = dealerSite.site.contact.address.full ?? where;
@@ -215,11 +219,11 @@ export default async function VehiclePage({ params }: Props) {
         </aside>
       </div>
 
-      {related.length > 0 && (
+      {others.length > 0 && (
         <section className="mt-10">
           <h2 className="font-display text-xl font-bold">Outras oportunidades para você</h2>
           <div className="mt-4">
-            <VehicleGrid vehicles={related.slice(0, 3).map((item) => ({ ...item, dealer }))} />
+            <VehicleGrid vehicles={others} />
           </div>
         </section>
       )}
