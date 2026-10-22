@@ -17,7 +17,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
   const href = vehicleHref(vehicle);
   const label = price(vehicle.priceCents, vehicle.priceOnRequest);
   const where = place(vehicle.dealer.city, vehicle.dealer.state);
-  const badges = vehicle.featured || vehicle.belowFipe || vehicle.inspected || vehicle.has360 || vehicle.status === "reserved";
+  const badges = vehicle.featured || vehicle.belowFipe || vehicle.inspected || vehicle.has360;
   const badge = "rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide";
 
   return (
@@ -49,17 +49,10 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
       <div className="flex flex-1 flex-col p-4">
         {badges && (
           <div className="mb-3 flex flex-wrap gap-1.5">
-            {/* reservado não está à venda: os outros selos só distrairiam */}
-            {vehicle.status === "reserved" ? (
-              <span className={`${badge} bg-ink text-white`}>Reservado</span>
-            ) : (
-              <>
-                {vehicle.featured && <span className={`${badge} bg-brand text-white`}>Destaque</span>}
-                {vehicle.belowFipe && <span className={`${badge} bg-success text-white`}>Abaixo da FIPE</span>}
-                {vehicle.inspected && <span className={`${badge} bg-subtle text-ink`}>Vistoriado</span>}
-                {vehicle.has360 && <span className={`${badge} bg-subtle text-ink`}>360°</span>}
-              </>
-            )}
+            {vehicle.featured && <span className={`${badge} bg-brand text-white`}>Destaque</span>}
+            {vehicle.belowFipe && <span className={`${badge} bg-success text-white`}>Abaixo da FIPE</span>}
+            {vehicle.inspected && <span className={`${badge} bg-subtle text-ink`}>Vistoriado</span>}
+            {vehicle.has360 && <span className={`${badge} bg-subtle text-ink`}>360°</span>}
           </div>
         )}
         <h3 className="font-display text-base font-bold uppercase leading-tight">

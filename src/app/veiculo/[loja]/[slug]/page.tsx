@@ -282,8 +282,7 @@ function PriceCard({
   return (
     <section className={`rounded-2xl border border-line p-5 ${className}`}>
       <div className="flex gap-2">
-        {vehicle.featured && vehicle.status !== "reserved" && <span className="rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white">Destaque</span>}
-        {vehicle.status === "reserved" && <span className="rounded-full bg-ink px-3 py-1 text-xs font-semibold text-white">Reservado</span>}
+        {vehicle.featured && <span className="rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white">Destaque</span>}
       </div>
       <p className="mt-3 font-display text-3xl font-bold">{label}</p>
       <p className="mt-1 text-xs text-muted">Preço anunciado • financiamento sujeito à análise</p>
