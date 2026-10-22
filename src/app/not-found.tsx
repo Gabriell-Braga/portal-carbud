@@ -1,9 +1,12 @@
+import { CarFront } from "lucide-react";
 import Link from "next/link";
 
 export default function NotFound() {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-4 py-20 text-center">
-      <div className="size-20 rounded-full bg-brand-soft" aria-hidden="true" />
+      <div className="grid size-20 place-items-center rounded-full bg-brand-soft text-brand" aria-hidden="true">
+        <CarFront className="size-9" strokeWidth={1.75} />
+      </div>
       <h1 className="mt-6 font-display text-2xl font-bold">Página não encontrada</h1>
       <p className="mt-2 text-sm text-muted">
         O anúncio pode ter sido vendido ou retirado pela loja. Veja outras ofertas disponíveis.

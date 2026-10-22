@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, SearchX } from "lucide-react";
 import Link from "next/link";
 import type { PortalVehicle } from "~/lib/types";
 import { VehicleCard } from "./vehicle-card";
@@ -28,7 +28,9 @@ export function VehicleGrid({ vehicles }: { vehicles: PortalVehicle[] }) {
 export function EmptyResults({ clearHref }: { clearHref: string }) {
   return (
     <div className="flex flex-col items-center rounded-2xl border border-line px-6 py-12 text-center">
-      <div className="size-20 rounded-full bg-brand-soft" aria-hidden="true" />
+      <div className="grid size-20 place-items-center rounded-full bg-brand-soft text-brand" aria-hidden="true">
+        <SearchX className="size-9" strokeWidth={1.75} />
+      </div>
       <h2 className="mt-5 font-display text-lg font-bold">Nenhum carro encontrado</h2>
       <p className="mt-1 max-w-xs text-sm text-muted">Tente ampliar a localização ou remover filtros da sua busca.</p>
       <div className="mt-6 flex w-full max-w-xs flex-col gap-2">
