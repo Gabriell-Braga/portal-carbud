@@ -50,6 +50,12 @@ function withLocalMedia<T extends Vehicle>(vehicle: T): T {
       card: localMedia(photo.card) ?? photo.card,
       full: localMedia(photo.full) ?? photo.full,
     })),
+    spin: vehicle.spin?.map((url) => localMedia(url) ?? url),
+    pano: localMedia(vehicle.pano ?? null),
+    inspection: vehicle.inspection && {
+      ...vehicle.inspection,
+      reportUrl: localMedia(vehicle.inspection.reportUrl) ?? vehicle.inspection.reportUrl,
+    },
   };
 }
 

@@ -44,6 +44,8 @@ Windows: derrube o `npm run dev` antes de `npm run build` e apague `.next` entre
 
 Fonte da verdade: Figma "Benchmark UX Automotivo — CarGurus × Webmotors × OLX | Wireframes" (páginas 01–05: mobile, contato e estados, desktop, sistema de design, handoff). Tokens em `src/app/globals.css` (`@theme`): `brand #C6000F`, Sora (títulos, `font-display`) + Inter. Card: mídia em caixa própria 16:9 com overflow escondido, texto empilhado abaixo, nada por cima da foto além de selos. Mobile-first; validar em 360/390/768/1024/1440.
 
-Fora de propósito (não inventar dado): vistoria, visão 360°, chat em tempo real, avaliações. Só entram quando o painel tiver o dado (plano de vistoria e 360° em `../carbud/docs/plano-vistoria-360.md`).
+Fora de propósito (não inventar dado): chat em tempo real, avaliações. Só entram quando o painel tiver o dado.
 
 **Abaixo da FIPE**: o painel compara o preço com a FIPE salva no cadastro do carro (toda ficha consulta a FIPE). `portal/vehicles` aceita `abaixoFipe=1` e devolve `belowFipe` em cada carro; carro sem FIPE salva nunca entra.
+
+**Vistoriado e 360°**: mesmo esquema, regra no painel. `vistoriado=1` / `inspected` = laudo em PDF anexado, aprovado e com menos de um ano; `visao360=1` / `has360` = giro externo ou panorâmica do interior. A ficha recebe `inspection` (com link do laudo), `spin` (quadros) e `pano`; `components/viewer-360.tsx` mostra os dois sem dependência e só baixa os quadros quando a pessoa abre o giro.

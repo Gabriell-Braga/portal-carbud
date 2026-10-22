@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, Check, MapPin } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, FileText, MapPin, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,6 +8,7 @@ import { FavoriteButton } from "~/components/favorites";
 import { Gallery } from "~/components/gallery";
 import { ShareButton } from "~/components/share";
 import { VehicleGrid } from "~/components/results";
+import { Viewer360 } from "~/components/viewer-360";
 import { km, place, price } from "~/lib/format";
 import { fetchDealer, fetchVehicle, searchVehicles } from "~/lib/panel";
 import { siteUrl } from "~/lib/site";
@@ -146,6 +147,10 @@ export default async function VehiclePage({ params }: Props) {
             <Gallery photos={vehicle.photos} title={vehicle.title} seed={vehicle.id} />
           </div>
 
+          {(vehicle.spin?.length || vehicle.pano) && (
+            <Viewer360 spin={vehicle.spin ?? []} pano={vehicle.pano ?? null} title={vehicle.title} />
+          )}
+
           {/* no mobile o preço vem logo depois das fotos */}
           <PriceCard className="lg:hidden" vehicle={vehicle} label={label} dealer={dealer} />
 
@@ -160,6 +165,31 @@ export default async function VehiclePage({ params }: Props) {
               ))}
             </dl>
           </section>
+
+          {vehicle.inspection && (
+            <section className="rounded-2xl border border-line p-5">
+              <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+                <ShieldCheck className="size-5 text-success" aria-hidden="true" /> Veículo vistoriado
+              </h2>
+              <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
+                <div>
+                  <dt className="text-xs text-muted">Empresa</dt>
+                  <dd className="text-sm font-semibold">{vehicle.inspection.provider}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted">Data do laudo</dt>
+                  <dd className="text-sm font-semibold">{vehicle.inspection.date.split("-").reverse().join("/")}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted">Resultado</dt>
+                  <dd className="text-sm font-semibold">{vehicle.inspection.resultLabel}</dd>
+                </div>
+              </dl>
+              <a href={vehicle.inspection.reportUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:text-brand-hover">
+                <FileText className="size-4" aria-hidden="true" /> Ver laudo (PDF)
+              </a>
+            </section>
+          )}
 
           {(vehicle.description || vehicle.options.length > 0) && (
             <section className="rounded-2xl border border-line p-5">

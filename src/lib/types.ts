@@ -42,10 +42,16 @@ export type Vehicle = {
   description: string | null;
   coverUrl: string | null;
   photos: VehiclePhoto[];
+  /** Só na ficha. Laudo que vale selo; nulo sem vistoria válida. */
+  inspection?: { provider: string; date: string; resultLabel: string; reportUrl: string } | null;
+  /** Só na ficha. Quadros do giro externo, na ordem. */
+  spin?: string[];
+  /** Só na ficha. Panorâmica 2:1 do interior. */
+  pano?: string | null;
 };
 
-/** `belowFipe`: preço menor que a FIPE salva no painel; só a busca `portal/vehicles` manda. */
-export type PortalVehicle = Vehicle & { dealer: Dealer; belowFipe?: boolean };
+/** Selos que só a busca `portal/vehicles` manda: FIPE, vistoria válida e 360°. */
+export type PortalVehicle = Vehicle & { dealer: Dealer; belowFipe?: boolean; inspected?: boolean; has360?: boolean };
 
 export type Facets = {
   brands: { brand: string; models: string[] }[];

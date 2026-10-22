@@ -22,6 +22,13 @@ function Pair({ children }: { children: React.ReactNode }) {
 
 const Until = () => <span className="text-muted" aria-hidden="true">até</span>;
 
+/** Chaves do Figma; cada uma manda `nome=1` e o painel aplica a regra do selo. */
+const SWITCHES = [
+  ["abaixoFipe", "Abaixo da FIPE", "Ofertas com preço abaixo da tabela"],
+  ["vistoriado", "Vistoriado", "Laudo e dados de vistoria disponíveis"],
+  ["visao360", "Visão 360°", "Fotos imersivas quando disponíveis"],
+] as const;
+
 function options(values: string[], labels: Record<string, string>, all: string): Option[] {
   return [{ value: "", label: all }, ...values.map((value) => ({ value, label: labels[value] ?? value }))];
 }
@@ -30,8 +37,8 @@ function options(values: string[], labels: Record<string, string>, all: string):
  * Filtros da busca (Figma 03 · Desktop · Listagem). Formulário GET simples: a
  * URL é o estado (spec 02 do handoff), então voltar do anúncio e compartilhar
  * o link preservam tudo. `action` muda quando o mesmo formulário filtra o
- * estoque de uma loja. Versão, condição, vendedor, vistoria e 360° do Figma
- * ficam de fora até o painel ter o dado.
+ * estoque de uma loja. Versão, condição e vendedor do Figma ficam de fora até
+ * o painel ter o dado.
  */
 export function FiltersForm({
   action,
@@ -117,13 +124,15 @@ export function FiltersForm({
         <Select name="carroceria" label="Carroceria" placeholder="Todas" defaultValue={values.carroceria ?? ""} options={options(facets.bodyTypes, BODY_TYPE_LABELS, "Todas")} />
       </Group>
 
-      <div className="flex items-center justify-between gap-4 py-4">
-        <label htmlFor="f-fipe" className="min-w-0">
-          <span className="block text-sm font-semibold">Abaixo da FIPE</span>
-          <span className="mt-0.5 block text-xs text-muted">Ofertas com preço abaixo da tabela</span>
-        </label>
-        <input id="f-fipe" type="checkbox" name="abaixoFipe" value="1" defaultChecked={values.abaixoFipe === "1"} className="switch" />
-      </div>
+      {SWITCHES.map(([name, title, hint]) => (
+        <div key={name} className="flex items-center justify-between gap-4 border-b border-line py-4 last:border-0">
+          <label htmlFor={`f-${name}`} className="min-w-0">
+            <span className="block text-sm font-semibold">{title}</span>
+            <span className="mt-0.5 block text-xs text-muted">{hint}</span>
+          </label>
+          <input id={`f-${name}`} type="checkbox" name={name} value="1" defaultChecked={values[name] === "1"} className="switch" />
+        </div>
+      ))}
 
       {/* no desktop o FilterPanel filtra a cada mudança; sem botão de aplicar */}
       <div className="mt-2 hidden lg:block">
