@@ -30,7 +30,7 @@ function options(values: string[], labels: Record<string, string>, all: string):
  * Filtros da busca (Figma 03 · Desktop · Listagem). Formulário GET simples: a
  * URL é o estado (spec 02 do handoff), então voltar do anúncio e compartilhar
  * o link preservam tudo. `action` muda quando o mesmo formulário filtra o
- * estoque de uma loja. Versão, condição, vendedor, FIPE e vistoria do Figma
+ * estoque de uma loja. Versão, condição, vendedor, vistoria e 360° do Figma
  * ficam de fora até o painel ter o dado.
  */
 export function FiltersForm({
@@ -116,6 +116,14 @@ export function FiltersForm({
       <Group title="Carroceria">
         <Select name="carroceria" label="Carroceria" placeholder="Todas" defaultValue={values.carroceria ?? ""} options={options(facets.bodyTypes, BODY_TYPE_LABELS, "Todas")} />
       </Group>
+
+      <div className="flex items-center justify-between gap-4 py-4">
+        <label htmlFor="f-fipe" className="min-w-0">
+          <span className="block text-sm font-semibold">Abaixo da FIPE</span>
+          <span className="mt-0.5 block text-xs text-muted">Ofertas com preço abaixo da tabela</span>
+        </label>
+        <input id="f-fipe" type="checkbox" name="abaixoFipe" value="1" defaultChecked={values.abaixoFipe === "1"} className="switch" />
+      </div>
 
       <div className="mt-2 hidden space-y-2 lg:block">
         <button className="h-11 w-full rounded-lg bg-brand text-sm font-semibold text-white hover:bg-brand-hover">Aplicar filtros</button>

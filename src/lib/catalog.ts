@@ -51,6 +51,7 @@ export const FILTER_KEYS = [
   "anoMin",
   "anoMax",
   "kmMax",
+  "abaixoFipe",
 ] as const;
 
 const reais = (value: string) => `R$ ${Number(value).toLocaleString("pt-BR")}`;
@@ -76,6 +77,8 @@ export function filterLabel(key: string, value: string): string {
       return `Até ${value}`;
     case "kmMax":
       return `Até ${Number(value).toLocaleString("pt-BR")} km`;
+    case "abaixoFipe":
+      return "Abaixo da FIPE";
     default:
       return value;
   }

@@ -102,7 +102,7 @@ export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title
                 onClick={() => show(i)}
                 aria-label={`Ver foto ${i + 1}`}
                 aria-current={i === index}
-                className={`block aspect-[4/3] w-full overflow-hidden rounded-lg border-2 transition ${i === index ? "border-ink" : "border-transparent opacity-70 hover:opacity-100"}`}
+                className={`block aspect-[4/3] w-full overflow-hidden rounded-lg border-2 transition ${i === index ? "border-brand" : "border-transparent opacity-70 hover:opacity-100"}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={photo.thumb} alt="" className="h-full w-full object-cover" loading="lazy" />

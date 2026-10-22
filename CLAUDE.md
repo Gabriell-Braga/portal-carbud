@@ -44,4 +44,6 @@ Windows: derrube o `npm run dev` antes de `npm run build` e apague `.next` entre
 
 Fonte da verdade: Figma "Benchmark UX Automotivo — CarGurus × Webmotors × OLX | Wireframes" (páginas 01–05: mobile, contato e estados, desktop, sistema de design, handoff). Tokens em `src/app/globals.css` (`@theme`): `brand #C6000F`, Sora (títulos, `font-display`) + Inter. Card: mídia em caixa própria 16:9 com overflow escondido, texto empilhado abaixo, nada por cima da foto além de selos. Mobile-first; validar em 360/390/768/1024/1440.
 
-Fora de propósito (não inventar dado): selo "Abaixo da FIPE", vistoria, chat em tempo real, avaliações. Só entram quando o painel tiver o dado.
+Fora de propósito (não inventar dado): vistoria, visão 360°, chat em tempo real, avaliações. Só entram quando o painel tiver o dado (plano de vistoria e 360° em `../carbud/docs/plano-vistoria-360.md`).
+
+**Abaixo da FIPE**: o painel compara o preço com a FIPE salva no cadastro do carro (toda ficha consulta a FIPE). `portal/vehicles` aceita `abaixoFipe=1` e devolve `belowFipe` em cada carro; carro sem FIPE salva nunca entra.

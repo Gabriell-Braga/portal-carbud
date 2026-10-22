@@ -44,7 +44,8 @@ export type Vehicle = {
   photos: VehiclePhoto[];
 };
 
-export type PortalVehicle = Vehicle & { dealer: Dealer };
+/** `belowFipe`: preço menor que a FIPE salva no painel; só a busca `portal/vehicles` manda. */
+export type PortalVehicle = Vehicle & { dealer: Dealer; belowFipe?: boolean };
 
 export type Facets = {
   brands: { brand: string; models: string[] }[];

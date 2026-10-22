@@ -35,6 +35,9 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: PortalVehi
             {vehicle.featured && (
               <span className="rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white shadow-sm">Destaque</span>
             )}
+            {vehicle.belowFipe && (
+              <span className="rounded-full bg-success px-3 py-1 text-xs font-semibold text-white shadow-sm">Abaixo da FIPE</span>
+            )}
             {vehicle.status === "reserved" && (
               <span className="rounded-full bg-ink px-3 py-1 text-xs font-semibold text-white shadow-sm">Reservado</span>
             )}
