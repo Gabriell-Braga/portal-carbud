@@ -18,7 +18,7 @@ export function km(value: number): string {
 
 export function place(city: string | null, state: string | null): string | null {
   if (!city) return state;
-  return state ? `${city} - ${state}` : city;
+  return state ? `${city}, ${state}` : city;
 }
 
 /**

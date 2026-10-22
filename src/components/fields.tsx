@@ -310,7 +310,7 @@ export function CityInput({
               }}
               className={optionClass(i === active, false)}
             >
-              {city}
+              {city.replace(" - ", ", ")}
             </li>
           ))}
         </ul>

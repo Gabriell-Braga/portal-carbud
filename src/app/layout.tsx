@@ -10,8 +10,8 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap"
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "Carbud — carros usados e seminovos à venda",
-    template: "%s | Carbud",
+    default: "Carros usados e seminovos à venda · Carbud",
+    template: "%s · Carbud",
   },
   description:
     "Compare veículos, encontre boas ofertas e converse diretamente com quem está vendendo.",

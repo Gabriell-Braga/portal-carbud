@@ -61,7 +61,7 @@ export function Pagination({
   const last = Math.min(page * pageSize, total);
   const range = (
     <p className="text-xs text-muted">
-      Exibindo {first}–{last} de {total.toLocaleString("pt-BR")} {total === 1 ? "resultado" : "resultados"}
+      Exibindo {first} a {last} de {total.toLocaleString("pt-BR")} {total === 1 ? "resultado" : "resultados"}
     </p>
   );
   if (pages <= 1) return <div className="mt-8">{range}</div>;

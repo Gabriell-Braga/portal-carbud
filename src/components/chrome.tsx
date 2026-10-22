@@ -18,7 +18,7 @@ const NAV = [
 
 export function Logo({ className = "h-8" }: { className?: string }) {
   return (
-    <Link href="/" aria-label="Carbud — página inicial" className="shrink-0">
+    <Link href="/" aria-label="Carbud, página inicial" className="shrink-0">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/brand/carbud-logo.svg" alt="carbud" className={`w-auto ${className}`} />
     </Link>

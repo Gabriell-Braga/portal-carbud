@@ -70,7 +70,7 @@ export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title
             <img
               key={photo.id}
               src={photo.full}
-              alt={`${title} — foto ${i + 1} de ${photos.length}`}
+              alt={`${title}, foto ${i + 1} de ${photos.length}`}
               loading={i === 0 ? "eager" : "lazy"}
               draggable={false}
               className="h-full w-full shrink-0 snap-start object-cover"

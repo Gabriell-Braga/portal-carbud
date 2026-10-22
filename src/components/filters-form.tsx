@@ -15,12 +15,12 @@ function Group({ title, htmlFor, children }: { title: string; htmlFor?: string; 
   );
 }
 
-/** Dois valores numa caixa só, como no Figma: "Mínimo — Máximo". */
+/** Dois valores numa caixa só: "Mínimo até Máximo". */
 function Pair({ children }: { children: React.ReactNode }) {
   return <div className={`${fieldBox} gap-2`}>{children}</div>;
 }
 
-const Dash = () => <span className="text-muted" aria-hidden="true">—</span>;
+const Until = () => <span className="text-muted" aria-hidden="true">até</span>;
 
 function options(values: string[], labels: Record<string, string>, all: string): Option[] {
   return [{ value: "", label: all }, ...values.map((value) => ({ value, label: labels[value] ?? value }))];
@@ -88,7 +88,7 @@ export function FiltersForm({
       <Group title="Ano" htmlFor="f-amin">
         <Pair>
           <MaskedInput mask="year" id="f-amin" name="anoMin" placeholder="Ano mínimo" aria-label="Ano mínimo" defaultValue={values.anoMin} className={bare} />
-          <Dash />
+          <Until />
           <MaskedInput mask="year" name="anoMax" placeholder="Ano máximo" aria-label="Ano máximo" defaultValue={values.anoMax} className={bare} />
         </Pair>
       </Group>
@@ -96,7 +96,7 @@ export function FiltersForm({
       <Group title="Preço" htmlFor="f-pmin">
         <Pair>
           <MaskedInput mask="money" id="f-pmin" name="precoMin" placeholder="Mínimo" aria-label="Preço mínimo" defaultValue={values.precoMin} className={bare} />
-          <Dash />
+          <Until />
           <MaskedInput mask="money" name="precoMax" placeholder="Máximo" aria-label="Preço máximo" defaultValue={values.precoMax} className={bare} />
         </Pair>
       </Group>

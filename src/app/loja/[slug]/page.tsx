@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!dealer) return { title: "Loja não encontrada" };
   const city = dealer.site.contact.address.city;
   return {
-    title: `${dealer.site.name}${city ? ` em ${city}` : ""} — estoque`,
+    title: `Estoque da ${dealer.site.name}${city ? ` em ${city}` : ""}`,
     description: `Carros à venda na ${dealer.site.name}. Veja preços, fotos e fale direto com a loja.`,
     alternates: { canonical: `/loja/${slug}` },
   };
