@@ -64,6 +64,8 @@ export function FilterPanel({ total, children }: { total: number; children: Reac
         role={open ? "dialog" : undefined}
         aria-modal={open || undefined}
         aria-label="Filtrar veículos"
+        // a busca agora troca sem recarregar; a tela de filtros fecha sozinha ao enviar
+        onSubmit={() => setOpen(false)}
       >
         <div className="flex items-center justify-between border-b border-line px-4 py-3 lg:hidden">
           <button type="button" onClick={() => setOpen(false)} aria-label="Fechar filtros" className="grid size-11 place-items-center">

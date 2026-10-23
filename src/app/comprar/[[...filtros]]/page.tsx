@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { Select } from "~/components/fields";
 import { FilterPanel } from "~/components/filter-panel";
 import { FiltersForm } from "~/components/filters-form";
+import { Pending, SearchNav } from "~/components/search-nav";
 import { EmptyResults, Pagination, VehicleGrid } from "~/components/results";
 import { FILTER_KEYS, SORTS, filterLabel } from "~/lib/catalog";
 import { cityFromCep, cepDigits } from "~/lib/cep";
@@ -63,6 +64,8 @@ export default async function BuyPage(props: Props) {
   if (canonical !== current) redirect(canonical);
 
   const result = await searchVehicles(values);
+  // navegação sem recarregar mantém os campos montados; a chave os refaz com a busca nova (chip removido, limpar)
+  const state = JSON.stringify(values);
 
   const [base, qs = ""] = canonical.split("?");
   const applied = FILTER_KEYS.filter((key) => values[key] && key !== "loja");
@@ -96,10 +99,10 @@ export default async function BuyPage(props: Props) {
         </header>
       </div>
 
-      <div className="mt-5 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start lg:gap-8">
+      <SearchNav path="/comprar" className="mt-5 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start lg:gap-8">
         <aside className="lg:sticky lg:top-24">
           <FilterPanel total={result.total}>
-            <FiltersForm action="/comprar" facets={result.facets} values={values} />
+            <FiltersForm key={state} action="/comprar" facets={result.facets} values={values} />
           </FilterPanel>
         </aside>
 
@@ -111,7 +114,7 @@ export default async function BuyPage(props: Props) {
             </p>
             <div className="flex items-center gap-2 text-sm text-muted">
               Ordenar por
-              <Select form="filtros" name="ordem" label="Ordenar por" placeholder="Mais relevantes" defaultValue={values.ordem ?? "recentes"} options={SORTS} autoSubmit className="w-48" />
+              <Select key={state} form="filtros" name="ordem" label="Ordenar por" placeholder="Mais relevantes" defaultValue={values.ordem ?? "recentes"} options={SORTS} autoSubmit className="w-48" />
             </div>
           </div>
 
@@ -135,6 +138,7 @@ export default async function BuyPage(props: Props) {
             </div>
           )}
 
+          <Pending>
           {/* faixa de destaques só na vitrine: página 1, "Mais relevantes" e nenhum filtro */}
           {result.page === 1 && !values.ordem && !FILTER_KEYS.some((key) => values[key]) && !!result.highlights?.length && (
             <>
@@ -153,8 +157,9 @@ export default async function BuyPage(props: Props) {
           ) : (
             <EmptyResults clearHref="/comprar" />
           )}
+          </Pending>
         </section>
-      </div>
+      </SearchNav>
     </div>
   );
 }

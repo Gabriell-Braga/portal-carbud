@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Select } from "~/components/fields";
 import { FilterPanel } from "~/components/filter-panel";
 import { FiltersForm } from "~/components/filters-form";
+import { Pending, SearchNav } from "~/components/search-nav";
 import { EmptyResults, Pagination, VehicleGrid } from "~/components/results";
 import { SORTS } from "~/lib/catalog";
 import { place } from "~/lib/format";
@@ -77,10 +78,10 @@ export default async function DealerPage({ params, searchParams }: Props) {
         </div>
       </header>
 
-      <div className="mt-6 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start lg:gap-8">
+      <SearchNav path={base} className="mt-6 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start lg:gap-8">
         <aside className="lg:sticky lg:top-24">
           <FilterPanel total={result.total}>
-            <FiltersForm action={base} facets={result.facets} values={values} hideCity />
+            <FiltersForm key={JSON.stringify(values)} action={base} facets={result.facets} values={values} hideCity />
           </FilterPanel>
         </aside>
 
@@ -92,10 +93,11 @@ export default async function DealerPage({ params, searchParams }: Props) {
             </h2>
             <div className="flex items-center gap-2 text-sm text-muted">
               Ordenar por
-              <Select form="filtros" name="ordem" label="Ordenar por" placeholder="Mais recentes" defaultValue={values.ordem ?? "recentes"} options={SORTS} autoSubmit className="w-48" />
+              <Select key={JSON.stringify(values)} form="filtros" name="ordem" label="Ordenar por" placeholder="Mais recentes" defaultValue={values.ordem ?? "recentes"} options={SORTS} autoSubmit className="w-48" />
             </div>
           </div>
           <div className="mt-5">
+            <Pending>
             {result.vehicles.length ? (
               <>
                 <VehicleGrid vehicles={result.vehicles} />
@@ -104,9 +106,10 @@ export default async function DealerPage({ params, searchParams }: Props) {
             ) : (
               <EmptyResults clearHref={base} />
             )}
+            </Pending>
           </div>
         </section>
-      </div>
+      </SearchNav>
     </div>
   );
 }
