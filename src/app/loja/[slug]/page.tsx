@@ -79,7 +79,7 @@ export default async function DealerPage({ params, searchParams }: Props) {
       </header>
 
       <SearchNav path={base} className="mt-6 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start lg:gap-8">
-        <aside className="lg:sticky lg:top-24">
+        <aside>
           <FilterPanel total={result.total}>
             <FiltersForm key={JSON.stringify(values)} action={base} facets={result.facets} values={values} hideCity />
           </FilterPanel>

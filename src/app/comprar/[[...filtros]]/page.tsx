@@ -99,8 +99,8 @@ export default async function BuyPage(props: Props) {
         </header>
       </div>
 
-      <SearchNav path="/comprar" className="mt-5 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start lg:gap-8">
-        <aside className="lg:sticky lg:top-24">
+      <SearchNav path="/comprar" catalog={{ brands: catalog.brands, cities: catalog.cities }} className="mt-5 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start lg:gap-8">
+        <aside>
           <FilterPanel total={result.total}>
             <FiltersForm key={state} action="/comprar" facets={result.facets} values={values} />
           </FilterPanel>
@@ -138,7 +138,7 @@ export default async function BuyPage(props: Props) {
             </div>
           )}
 
-          <Pending>
+          <Pending className="mt-6">
           {/* faixa de destaques só na vitrine: página 1, "Mais relevantes" e nenhum filtro */}
           {result.page === 1 && !values.ordem && !FILTER_KEYS.some((key) => values[key]) && !!result.highlights?.length && (
             <>
