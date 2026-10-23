@@ -10,8 +10,9 @@ import { Lightbox } from "./lightbox";
  * Galeria da ficha: foto em 4:3 (o formato em que as lojas fotografam, então
  * nada é cortado), arrasto no celular por scroll-snap e setas sempre à vista.
  * As miniaturas são uma fileira que rola sozinha até a foto atual.
- * Sem foto, a ilustração do Figma ocupa o lugar. Clicar na foto abre em tela
- * cheia, com zoom (`Lightbox`).
+ * Sem foto, a ilustração do Figma ocupa o lugar. O botão do canto abre a foto
+ * em tela cheia, com zoom (`Lightbox`); a foto em si não, para o clique não
+ * abrir sem querer.
  */
 export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title: string; seed: string }) {
   const track = useRef<HTMLDivElement>(null);
@@ -63,7 +64,6 @@ export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title
           onKeyDown={(event) => {
             if (event.key === "ArrowLeft") show(goal.current - 1);
             if (event.key === "ArrowRight") show(goal.current + 1);
-            if (event.key === "Enter") setOpen(goal.current);
           }}
           tabIndex={0}
           aria-label={`Fotos de ${title}`}
@@ -77,8 +77,7 @@ export function Gallery({ photos, title, seed }: { photos: VehiclePhoto[]; title
               alt={`${title}, foto ${i + 1} de ${photos.length}`}
               loading={i === 0 ? "eager" : "lazy"}
               draggable={false}
-              onClick={() => setOpen(i)}
-              className="h-full w-full shrink-0 cursor-zoom-in snap-start object-cover"
+              className="h-full w-full shrink-0 snap-start object-cover"
             />
           ))}
         </div>
