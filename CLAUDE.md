@@ -50,6 +50,6 @@ Fora de propósito (não inventar dado): chat em tempo real, avaliações. Só e
 
 **Abaixo da FIPE**: o painel compara o preço com a FIPE salva no cadastro do carro (toda ficha consulta a FIPE). `portal/vehicles` aceita `abaixoFipe=1` e devolve `belowFipe` em cada carro; carro sem FIPE salva nunca entra.
 
-**Destaques**: na busca do portal, destaque não sobe na lista. `portal/vehicles` devolve `highlights`: até 3 destaques dos mesmos filtros, em rodízio por minuto que passa uma vez por cada loja (`pickHighlights` no painel), então loja com 10 destaques aparece tanto quanto loja com 1. O `/comprar` mostra a faixa só na página 1 e tira o selo dos carros da lista.
+**Destaques**: na busca do portal, destaque não sobe na lista. `portal/vehicles` devolve `highlights`: até 3 destaques dos mesmos filtros, em rodízio por minuto que passa uma vez por cada loja (`pickHighlights` no painel), então loja com 10 destaques aparece tanto quanto loja com 1. O `/comprar` mostra a faixa só na página 1, em "Mais relevantes" e sem nenhum filtro (inclui `q` e `loja`), e tira o selo dos carros da lista.
 
 **Vistoriado e 360°**: mesmo esquema, regra no painel. `vistoriado=1` / `inspected` = laudo em PDF anexado, aprovado e com menos de um ano; `visao360=1` / `has360` = giro externo ou panorâmica do interior. A ficha recebe `inspection` (com link do laudo), `spin` (quadros) e `pano`; `components/viewer-360.tsx` mostra os dois sem dependência e só baixa os quadros quando a pessoa abre o giro.

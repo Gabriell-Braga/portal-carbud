@@ -135,7 +135,8 @@ export default async function BuyPage(props: Props) {
             </div>
           )}
 
-          {result.page === 1 && !!result.highlights?.length && (
+          {/* faixa de destaques só na vitrine: página 1, "Mais relevantes" e nenhum filtro */}
+          {result.page === 1 && !values.ordem && !FILTER_KEYS.some((key) => values[key]) && !!result.highlights?.length && (
             <>
               <h2 className="mt-6 mb-3 text-sm font-semibold">Destaques</h2>
               <VehicleGrid vehicles={result.highlights} />
